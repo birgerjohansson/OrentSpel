@@ -1,5 +1,5 @@
 {
-  "roundDurationSeconds": 20,
+  "roundDurationSeconds": 30,
   "minimumItemsPerPlayer": 3,
   "itemLifetimeMs": 8000,
   "soundEnabled": false

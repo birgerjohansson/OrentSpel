@@ -1,5 +1,6 @@
 import { Renderer } from './ui/Renderer.js';
 import { GameController } from './logic/GameController.js';
+import { StatisticsStore } from './logic/StatisticsStore.js';
 
 async function loadConfig() {
   const [configResponse, settingsResponse] = await Promise.all([
@@ -19,15 +20,16 @@ async function boot() {
   try {
     const config = await loadConfig();
     const renderer = new Renderer(root, config);
+    const statistics = new StatisticsStore();
     const showStart = () => renderer.showStart(
-      () => renderer.showCountdown(() => new GameController(renderer, config, showStart).start()),
+      () => renderer.showCountdown(() => new GameController(renderer, config, showStart, statistics).start()),
       () => renderer.showSettings(config.settings, async settings => {
         const response = await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings) });
         if (!response.ok) throw new Error('Kunde inte spara inställningarna.');
         const saved = await response.json();
         Object.assign(config.game, saved); config.settings = saved;
         showStart();
-      }, showStart)
+      }, showStart, () => statistics.clear())
     );
     showStart();
   } catch (error) {

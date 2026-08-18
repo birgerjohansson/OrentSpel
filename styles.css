@@ -198,6 +198,15 @@ button { font: inherit; }
 .result-list strong { font-size: 1.15em; }
 .restart-button { border: 0; border-radius: 999px; padding: .75rem 2.5rem; background: #f7c744; color: #193422; box-shadow: 0 .3rem 0 #9d6c14; font-size: clamp(1rem, 2vw, 1.4rem); font-weight: 950; cursor: pointer; }
 .restart-button:active { transform: translateY(.2rem); box-shadow: 0 .1rem 0 #9d6c14; }
+.result-actions { display: flex; align-items: center; justify-content: center; gap: .8rem; }
+.stats-button { display: grid; place-items: center; width: 3rem; aspect-ratio: 1; border: 3px solid rgba(255,255,255,.8); border-radius: 50%; background: transparent; color: #fff; font-size: 1.5rem; font-weight: 950; cursor: pointer; }
+.statistics-modal { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; padding: 1rem; background: rgba(4,20,11,.72); }
+.statistics-card { position: relative; width: min(92vw, 34rem); border: 4px solid rgba(255,255,255,.85); border-radius: 1.7rem; padding: clamp(1.5rem, 4vw, 2.6rem); background: #173d2a; color: #fff; box-shadow: 0 1rem 3rem rgba(0,0,0,.55); }
+.statistics-card h2 { margin: 0 0 1rem; font-size: clamp(2rem, 4vw, 3.2rem); text-align: center; }
+.statistics-card dl { display: grid; gap: .65rem; margin: 0; }
+.statistics-card dl div { display: flex; justify-content: space-between; gap: 1rem; padding: .7rem; border-radius: .6rem; background: rgba(255,255,255,.1); }
+.statistics-card dt { font-weight: 800; }.statistics-card dd { margin: 0; color: #f7c744; font-weight: 950; text-align: right; }
+.statistics-close { position: absolute; top: .6rem; right: .7rem; width: 2.3rem; height: 2.3rem; border: 0; border-radius: 50%; background: transparent; color: #fff; font-size: 2rem; cursor: pointer; }
 
 .settings-screen { display: grid; place-items: center; height: 100%; padding: 1rem; background: linear-gradient(180deg, rgba(4,31,18,.4), rgba(4,31,18,.72)), url('./Resources/scene_school.png') center / cover; }
 .settings-card { width: min(92vw, 50rem); border: 4px solid rgba(255,255,255,.8); border-radius: 2rem; padding: clamp(1.4rem, 3.5vw, 2.6rem); background: rgba(16,48,31,.96); box-shadow: 0 1rem 3rem rgba(0,0,0,.5); color: #fff; }
@@ -216,6 +225,8 @@ button { font: inherit; }
 .settings-actions .restart-button { touch-action: manipulation; }
 .settings-actions .restart-button:disabled { opacity: .55; cursor: wait; }
 .settings-status { min-height: 1.3em; margin: .8rem 0 0; color: #ffb0a9; font-weight: 800; text-align: center; }
+.reset-statistics { display: block; margin: .8rem auto 0; border: 2px solid #ffb0a9; border-radius: 999px; padding: .55rem 1rem; background: transparent; color: #ffb0a9; font-size: .85rem; font-weight: 900; cursor: pointer; touch-action: manipulation; }
+.reset-statistics:disabled { opacity: .65; cursor: default; }
 
 @media (max-height: 550px) {
   .bin { min-height: 6.4rem; }

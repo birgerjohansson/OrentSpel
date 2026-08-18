@@ -2,11 +2,13 @@ import { ItemFactory } from './ItemFactory.js';
 import { isCorrectSort } from './SortRules.js';
 import { GameState } from './GameState.js';
 import { SoundManager } from '../audio/SoundManager.js';
+import { StatisticsStore } from './StatisticsStore.js';
 
 export class GameController {
-  constructor(renderer, config, onReturnToStart) {
+  constructor(renderer, config, onReturnToStart, statistics = new StatisticsStore()) {
     this.renderer = renderer; this.config = config;
     this.onReturnToStart = onReturnToStart;
+    this.statistics = statistics;
     this.state = new GameState(config); this.factory = new ItemFactory(config); this.sound = new SoundManager(config.settings.soundEnabled);
     this.elements = new Map(); this.dragging = new Map(); this.spawnTimer = null; this.clockTimer = null; this.resultTimer = null;
     this.isRunning = false; this.endsAt = 0; this.lastTickSecond = null;
@@ -107,6 +109,7 @@ export class GameController {
   sort(item, binId, x, y) {
     if (!this.isRunning || !this.state.activeItems.has(item.id)) return;
     const correct = isCorrectSort(item, binId);
+    this.state.recordSort(item, binId, correct);
     const points = correct ? this.config.game.correctScore : this.config.game.wrongScore;
     const score = this.state.score(item.playerId, points);
     this.renderer.updateScore(item.playerId, score);
@@ -152,7 +155,8 @@ export class GameController {
     window.clearInterval(this.clockTimer);
     for (const item of this.state.activeItems.values()) window.clearTimeout(item.expiry);
     this.dragging.clear();
-    this.renderer.showResults(this.state.scores, () => this.returnToStart());
+    const statistics = this.statistics.recordRound(this.state);
+    this.renderer.showResults(this.state.scores, () => this.returnToStart(), () => this.renderer.showStatistics(statistics));
     this.sound.play('fanfare');
     this.resultTimer = window.setTimeout(() => this.returnToStart(), 60000);
   }

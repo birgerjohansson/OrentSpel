@@ -103,7 +103,7 @@ export class Renderer {
     window.setTimeout(() => element.remove(), 780);
   }
 
-  showResults(scores, onRestart) {
+  showResults(scores, onRestart, onShowStatistics) {
     const ranking = [...this.config.players]
       .sort((first, second) => scores.get(second.id) - scores.get(first.id));
     this.root.innerHTML = `
@@ -112,13 +112,27 @@ export class Renderer {
           <p class="result-kicker">ORENT SPEL · TIDEN ÄR SLUT</p>
           <h1>Resultat</h1>
           <ol class="result-list">${ranking.map((player, index) => `<li style="--player-color:${player.color}" aria-label="Placering ${index + 1}, ${scores.get(player.id)} poäng"><span class="result-place">${index + 1}</span><span class="player-dot"></span><strong>${scores.get(player.id)} p</strong></li>`).join('')}</ol>
-          <button class="restart-button" type="button">SPELA IGEN</button>
+          <div class="result-actions"><button class="stats-button" type="button" aria-label="Visa statistik">i</button><button class="restart-button" type="button">SPELA IGEN</button></div>
         </div>
       </section>`;
     this.root.querySelector('.restart-button').addEventListener('click', onRestart, { once: true });
+    this.root.querySelector('.stats-button').addEventListener('click', onShowStatistics);
   }
 
-  showSettings(settings, onSave, onClose) {
+  showStatistics(stats) {
+    const categoryLabel = id => this.config.categories.find(category => category.id === id)?.label || id;
+    const storeKey = Object.entries(stats.mistakes).sort(([, first], [, second]) => second - first)[0]?.[0];
+    const [from, to] = storeKey ? storeKey.split(':') : [];
+    const commonMistake = storeKey ? `${categoryLabel(from)} → ${categoryLabel(to)} (${stats.mistakes[storeKey]} gånger)` : 'Inga felsorteringar ännu';
+    const modal = document.createElement('section');
+    modal.className = 'statistics-modal';
+    modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true'); modal.setAttribute('aria-label', 'Statistik');
+    modal.innerHTML = `<div class="statistics-card"><button class="statistics-close" type="button" aria-label="Stäng statistik">×</button><h2>Statistik</h2><dl><div><dt>Bästa poäng</dt><dd>${stats.bestScore} p</dd></div><div><dt>Rätt sorterat</dt><dd>${stats.correct}</dd></div><div><dt>Fel sorterat</dt><dd>${stats.wrong}</dd></div><div><dt>Vanligaste felsortering</dt><dd>${escapeHTML(commonMistake)}</dd></div></dl></div>`;
+    this.root.append(modal);
+    modal.querySelector('.statistics-close').addEventListener('click', () => modal.remove());
+  }
+
+  showSettings(settings, onSave, onClose, onResetStatistics) {
     this.root.innerHTML = `
       <section class="settings-screen" aria-label="Spelinställningar">
         <div class="settings-card">
@@ -131,6 +145,7 @@ export class Renderer {
             <div class="setting-row"><span>Ljud</span><button class="sound-toggle ${settings.soundEnabled ? 'is-on' : ''}" type="button" data-sound="${settings.soundEnabled}">${settings.soundEnabled ? 'PÅ' : 'AV'}</button></div>
           </div>
           <p class="settings-status" data-settings-status aria-live="polite"></p>
+          <button class="reset-statistics" type="button" data-reset-statistics>ÅTERSTÄLL STATISTIK</button>
           <div class="settings-actions"><button class="secondary-button" type="button" data-close>AVBRYT</button><button class="restart-button" type="button" data-save>SPARA</button></div>
         </div>
       </section>`;
@@ -144,6 +159,11 @@ export class Renderer {
       button.dataset.sound = String(enabled); button.textContent = enabled ? 'PÅ' : 'AV'; button.classList.toggle('is-on', enabled);
     });
     this.root.querySelector('[data-close]').addEventListener('click', onClose);
+    this.root.querySelector('[data-reset-statistics]').addEventListener('click', event => {
+      onResetStatistics();
+      event.currentTarget.textContent = 'STATISTIK ÅTERSTÄLLD';
+      event.currentTarget.disabled = true;
+    });
     this.root.querySelector('[data-save]').addEventListener('click', async event => {
       const saveButton = event.currentTarget;
       if (saveButton.disabled) return;
