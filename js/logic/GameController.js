@@ -4,10 +4,11 @@ import { GameState } from './GameState.js';
 import { SoundManager } from '../audio/SoundManager.js';
 
 export class GameController {
-  constructor(renderer, config) {
+  constructor(renderer, config, onReturnToStart) {
     this.renderer = renderer; this.config = config;
+    this.onReturnToStart = onReturnToStart;
     this.state = new GameState(config); this.factory = new ItemFactory(config); this.sound = new SoundManager(config.settings.soundEnabled);
-    this.elements = new Map(); this.dragging = new Map(); this.spawnTimer = null; this.clockTimer = null;
+    this.elements = new Map(); this.dragging = new Map(); this.spawnTimer = null; this.clockTimer = null; this.resultTimer = null;
     this.isRunning = false; this.endsAt = 0;
   }
 
@@ -41,7 +42,7 @@ export class GameController {
     const element = this.renderer.addItem(item, player, position);
     item.element = element;
     this.state.addItem(item); this.elements.set(item.id, element);
-    item.expiry = window.setTimeout(() => this.expire(item), this.config.game.itemLifetimeMs);
+    item.expiry = window.setTimeout(() => this.expire(item), this.randomItemLifetime());
   }
 
   findOpenPosition() {
@@ -128,6 +129,12 @@ export class GameController {
     this.renderer.removeItem(item.element, expired);
   }
 
+  randomItemLifetime() {
+    const baseLifetime = this.config.game.itemLifetimeMs;
+    // Varierar ±25 % runt det valda värdet så att skräp inte försvinner i takt.
+    return Math.round(baseLifetime * (.75 + Math.random() * .5));
+  }
+
   updateClock() {
     const remaining = Math.max(0, Math.ceil((this.endsAt - performance.now()) / 1000));
     this.renderer.updateTimer(remaining);
@@ -141,9 +148,12 @@ export class GameController {
     window.clearInterval(this.clockTimer);
     for (const item of this.state.activeItems.values()) window.clearTimeout(item.expiry);
     this.dragging.clear();
-    this.renderer.showResults(this.state.scores, () => {
-      const nextRound = new GameController(this.renderer, this.config);
-      nextRound.start();
-    });
+    this.renderer.showResults(this.state.scores, () => this.returnToStart());
+    this.resultTimer = window.setTimeout(() => this.returnToStart(), 60000);
+  }
+
+  returnToStart() {
+    window.clearTimeout(this.resultTimer);
+    this.onReturnToStart();
   }
 }

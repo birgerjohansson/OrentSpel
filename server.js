@@ -13,7 +13,7 @@ const validSettings = value => {
   const duration = Number(value.roundDurationSeconds);
   const items = Number(value.minimumItemsPerPlayer);
   const lifetime = Number(value.itemLifetimeMs);
-  if (!Number.isInteger(duration) || duration < 30 || duration > 300 || duration % 30) return null;
+  if (!Number.isInteger(duration) || duration < 10 || duration > 300 || duration % 10) return null;
   if (!Number.isInteger(items) || items < 1 || items > 6) return null;
   if (!Number.isInteger(lifetime) || lifetime < 5000 || lifetime > 30000) return null;
   return { roundDurationSeconds: duration, minimumItemsPerPlayer: items, itemLifetimeMs: lifetime, soundEnabled: Boolean(value.soundEnabled) };

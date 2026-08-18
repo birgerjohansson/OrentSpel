@@ -26,7 +26,7 @@ Resources/        Tillhandahållna bildresurser
 
 ## Dolda spelinställningar
 
-Håll kvar fingret på **ORENT SPEL** på startsidan i tre sekunder för att öppna inställningarna. Där går det att ändra speltid, mängden skräp, hur snabbt skräp försvinner och ljud av/på. Inställningarna sparas i [config/runtime-settings.json](config/runtime-settings.json) och läses av vid varje spelstart.
+Håll kvar fingret på **ORENT SPEL** på startsidan i tre sekunder för att öppna inställningarna. Där går det att ändra speltid i sekunder, mängden skräp, hur snabbt skräp försvinner och ljud av/på. Varje skräpobjekt får en slumpad livstid inom ±25 % av det valda värdet. Inställningarna sparas i [config/runtime-settings.json](config/runtime-settings.json) och läses av vid varje spelstart. Resultatsidan återgår automatiskt till startsidan efter en minut.
 
 ## Ändra regler
 

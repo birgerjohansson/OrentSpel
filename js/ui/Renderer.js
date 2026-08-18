@@ -102,11 +102,12 @@ export class Renderer {
           <h1>Inställningar</h1>
           <p>Ändringarna sparas automatiskt för nästa omgång.</p>
           <div class="settings-list">
-            ${this.settingControl('Speltid', 'roundDurationSeconds', settings.roundDurationSeconds / 60, 'min', 1, 5, 1, 'min')}
+            ${this.settingControl('Speltid', 'roundDurationSeconds', settings.roundDurationSeconds, 'sek', 10, 300, 10, 'sek')}
             ${this.settingControl('Skräp per färg', 'minimumItemsPerPlayer', settings.minimumItemsPerPlayer, '', 1, 6, 1, '')}
             ${this.settingControl('Skräp försvinner efter', 'itemLifetimeMs', settings.itemLifetimeMs / 1000, 'sek', 5, 30, 1, 'sek')}
             <div class="setting-row"><span>Ljud</span><button class="sound-toggle ${settings.soundEnabled ? 'is-on' : ''}" type="button" data-sound="${settings.soundEnabled}">${settings.soundEnabled ? 'PÅ' : 'AV'}</button></div>
           </div>
+          <p class="settings-status" data-settings-status aria-live="polite"></p>
           <div class="settings-actions"><button class="secondary-button" type="button" data-close>AVBRYT</button><button class="restart-button" type="button" data-save>SPARA</button></div>
         </div>
       </section>`;
@@ -120,9 +121,17 @@ export class Renderer {
       button.dataset.sound = String(enabled); button.textContent = enabled ? 'PÅ' : 'AV'; button.classList.toggle('is-on', enabled);
     });
     this.root.querySelector('[data-close]').addEventListener('click', onClose);
-    this.root.querySelector('[data-save]').addEventListener('click', async () => {
+    this.root.querySelector('[data-save]').addEventListener('click', async event => {
+      const saveButton = event.currentTarget;
+      if (saveButton.disabled) return;
       const get = key => Number(this.root.querySelector(`[data-setting="${key}"]`).value);
-      await onSave({ roundDurationSeconds: get('roundDurationSeconds') * 60, minimumItemsPerPlayer: get('minimumItemsPerPlayer'), itemLifetimeMs: get('itemLifetimeMs') * 1000, soundEnabled: this.root.querySelector('.sound-toggle').dataset.sound === 'true' });
+      saveButton.disabled = true;
+      try {
+        await onSave({ roundDurationSeconds: get('roundDurationSeconds'), minimumItemsPerPlayer: get('minimumItemsPerPlayer'), itemLifetimeMs: get('itemLifetimeMs') * 1000, soundEnabled: this.root.querySelector('.sound-toggle').dataset.sound === 'true' });
+      } catch (error) {
+        this.root.querySelector('[data-settings-status]').textContent = 'Kunde inte spara. Kontrollera serveranslutningen och försök igen.';
+        saveButton.disabled = false;
+      }
     });
   }
 
