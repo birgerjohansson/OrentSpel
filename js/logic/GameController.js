@@ -48,13 +48,15 @@ export class GameController {
     const area = this.renderer.playArea.getBoundingClientRect();
     const width = Math.min(Math.max(68, area.width * .042), 116);
     const height = width * 1.08;
+    const binTops = [...this.renderer.root.querySelectorAll('.bin')].map(bin => bin.getBoundingClientRect().top - area.top);
+    const safeBottom = Math.max(90, Math.min(...binTops) - height - 18);
     const existing = [...this.elements.values()].map(element => ({ x: parseFloat(element.style.left), y: parseFloat(element.style.top) }));
     for (let tries = 0; tries < 28; tries++) {
       const x = 8 + Math.random() * Math.max(1, area.width - width - 16);
-      const y = Math.max(56, area.height * .13) + Math.random() * Math.max(1, area.height - height - area.height * .18);
+      const y = Math.max(92, area.height * .15) + Math.random() * Math.max(1, safeBottom - Math.max(92, area.height * .15));
       if (existing.every(point => Math.hypot(point.x - x, point.y - y) > width * .75)) return { x, y };
     }
-    return { x: Math.random() * Math.max(1, area.width - width), y: Math.max(58, Math.random() * Math.max(1, area.height - height)) };
+    return { x: Math.random() * Math.max(1, area.width - width), y: Math.max(92, Math.random() * Math.max(1, safeBottom)) };
   }
 
   beginDrag(event) {
@@ -81,7 +83,7 @@ export class GameController {
   endDrag(event) {
     const drag = this.dragging.get(event.pointerId);
     if (!drag) return;
-    const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('.bin');
+    const target = this.binAtPosition(event.clientX, event.clientY);
     this.finishDrag(event.pointerId);
     if (target) this.sort(drag.item, target.dataset.bin, event.clientX, event.clientY);
   }
@@ -92,6 +94,13 @@ export class GameController {
     const drag = this.dragging.get(pointerId); if (!drag) return;
     if (drag.element.hasPointerCapture(pointerId)) drag.element.releasePointerCapture(pointerId);
     drag.element.classList.remove('dragging'); this.dragging.delete(pointerId);
+  }
+
+  binAtPosition(x, y) {
+    return [...this.renderer.root.querySelectorAll('.bin')].find(bin => {
+      const rect = bin.getBoundingClientRect();
+      return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+    });
   }
 
   sort(item, binId, x, y) {

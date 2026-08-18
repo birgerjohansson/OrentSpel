@@ -20,7 +20,7 @@
     { "id": "paper", "label": "Papper", "binColor": "#3f89c9", "icon": "▤", "assets": ["Resources/candy.png", "Resources/Chocolate.png"] },
     { "id": "glass", "label": "Glas", "binColor": "#4cad75", "icon": "♧", "assets": ["Resources/glass bottle.png"] },
     { "id": "food", "label": "Matavfall", "binColor": "#815534", "icon": "♨", "assets": ["Resources/banana peel 2.png"] },
-    { "id": "battery", "label": "Batterier", "binColor": "#e34d3e", "icon": "▰", "symbol": "▰", "assets": [] },
-    { "id": "electronics", "label": "Elektronik", "binColor": "#8057a5", "icon": "⌁", "symbol": "⌁", "assets": [] }
+    { "id": "battery", "label": "Batterier", "binColor": "#e34d3e", "icon": "▰", "assets": ["Resources/trash bag - level 0.png", "Resources/trash bag - level1.png"] },
+    { "id": "electronics", "label": "Elektronik", "binColor": "#8057a5", "icon": "⌁", "assets": ["Resources/Trash bin.png", "Resources/large trash bag.png"] }
   ]
 }

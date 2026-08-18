@@ -18,6 +18,8 @@ button { font: inherit; }
   height: 100%;
   background: linear-gradient(180deg, rgba(4, 31, 18, .15), rgba(4, 31, 18, .62)), url('./Resources/scene_school.png') center / cover;
 }
+.start-content { display: grid; justify-items: center; gap: clamp(1.2rem, 3vw, 2.5rem); }
+.start-content h1 { margin: 0; color: #fff; font-size: clamp(3rem, 9vw, 8rem); font-weight: 1000; letter-spacing: .06em; text-shadow: 0 .3rem 0 #183c29, 0 .9rem 2rem rgba(0,0,0,.45); }
 
 .start-button {
   border: 5px solid rgba(255,255,255,.85);
@@ -81,43 +83,45 @@ button { font: inherit; }
 .game-timer {
   grid-column: 2 / span 2;
   justify-self: center;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(4rem, 7vw, 7rem);
+  aspect-ratio: 1;
   border: 3px solid rgba(255,255,255,.9);
-  border-radius: 999px;
-  padding: .25rem 1.4rem;
-  background: rgba(10,31,20,.88);
+  border-radius: 50%;
+  background: conic-gradient(#f7c744 calc(var(--progress) * 1turn), rgba(10,31,20,.78) 0);
   box-shadow: 0 .2rem .7rem rgba(0,0,0,.25);
   color: #fff;
-  font-size: clamp(1.2rem, 2.5vw, 2.4rem);
+  font-size: clamp(.9rem, 1.7vw, 1.6rem);
   font-weight: 950;
   letter-spacing: .08em;
 }
+.game-timer::before { content: ''; position: absolute; inset: 12%; border-radius: 50%; background: #173d2a; }
+.game-timer span { position: relative; z-index: 1; }
 
-.play-area { position: absolute; inset: 0 0 clamp(9.5rem, 20vh, 14rem); overflow: hidden; }
+.play-area { position: absolute; z-index: 6; inset: 0; overflow: visible; pointer-events: none; }
 .trash-object {
   --object-color: #f35c5f;
   position: absolute;
   z-index: 2;
   display: grid;
-  grid-template-rows: 1fr auto;
   place-items: center;
   width: clamp(4.25rem, 4.2vw, 7.25rem);
   aspect-ratio: 1 / 1.08;
   border: clamp(4px, .45vw, 7px) solid var(--object-color);
-  border-radius: 22%;
+  border-radius: 50%;
   padding: .28rem;
   overflow: hidden;
   background: rgba(255,255,255,.93);
   box-shadow: 0 .45rem 1rem rgba(0,0,0,.34), inset 0 0 0 2px rgba(255,255,255,.8);
   cursor: grab;
   touch-action: none;
+  pointer-events: auto;
   transition: opacity .3s ease, transform .3s ease;
 }
 .trash-object.dragging { z-index: 10; cursor: grabbing; transform: scale(1.12) rotate(-3deg); box-shadow: 0 .9rem 1.5rem rgba(0,0,0,.42); transition: none; }
-.trash-object img { width: 76%; height: 70%; object-fit: contain; filter: drop-shadow(0 .13rem .12rem rgba(0,0,0,.22)); pointer-events: none; }
-.trash-object__label { width: 100%; padding: .15rem .15rem .08rem; overflow: hidden; color: #163123; font-size: clamp(.63rem, 1.25vw, 1rem); font-weight: 950; line-height: 1.05; text-align: center; text-overflow: ellipsis; white-space: nowrap; pointer-events: none; }
-.object-symbol { display: grid; place-items: center; width: 70%; height: 68%; border-radius: 20%; background: #283f39; color: #fff; font-size: clamp(2rem, 5vw, 5rem); font-weight: 900; pointer-events: none; }
-.object-symbol--battery { background: #c8a42c; color: #26322c; }
-.object-symbol--electronics { background: #3b5872; }
+.trash-object img { width: 88%; height: 88%; object-fit: contain; filter: drop-shadow(0 .13rem .12rem rgba(0,0,0,.22)); pointer-events: none; }
 
 .bins {
   position: absolute;
@@ -184,7 +188,6 @@ button { font: inherit; }
 .restart-button:active { transform: translateY(.2rem); box-shadow: 0 .1rem 0 #9d6c14; }
 
 @media (max-height: 550px) {
-  .play-area { inset-bottom: 7.5rem; }
   .bin { min-height: 6.4rem; }
   .trash-object { width: clamp(3.8rem, 6vw, 6.25rem); }
 }

@@ -1,4 +1,4 @@
-# Sopsorteringen
+# Orent Spel
 
 Ett touch-fokuserat HTML5-spel för fyra samtidiga spelare. Varje spelare har en egen färg och drar sitt färgmärkta skräp till rätt soptunna. Rätt sortering ger 10 poäng, fel sortering ger -4 poäng. En spelomgång tar två minuter och avslutas med en resultatsida. Skräp som lämnas kvar försvinner efter 12 sekunder och ersätts automatiskt, så att alla alltid har saker att sortera.
 
@@ -34,7 +34,7 @@ Git-repot är initierat. När du är redo:
 
 ```sh
 git add .
-git commit -m "Initial version of Sopsorteringen"
+git commit -m "Initial version of Orent Spel"
 git branch -M main
 git remote add origin <din-github-url>
 git push -u origin main
