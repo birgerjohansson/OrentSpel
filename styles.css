@@ -117,7 +117,7 @@ button { font: inherit; }
   z-index: 2;
   display: grid;
   place-items: center;
-  width: clamp(4.25rem, 4.2vw, 7.25rem);
+  width: var(--trash-size, clamp(4.25rem, 4.2vw, 7.25rem));
   aspect-ratio: 1 / 1.08;
   border: clamp(4px, .45vw, 7px) solid var(--object-color);
   border-radius: 50%;
@@ -140,7 +140,7 @@ button { font: inherit; }
   left: 0;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(5, minmax(4rem, 14vw));
+  grid-template-columns: repeat(5, var(--bin-width, minmax(4rem, 14vw)));
   justify-content: center;
   gap: clamp(.15rem, .5vw, .55rem);
   align-items: end;
@@ -165,7 +165,7 @@ button { font: inherit; }
 .bin::after { content: ''; position: absolute; inset: 13% 11% 2%; border: 2px solid rgba(0,0,0,.16); border-radius: .3rem .3rem .9rem .9rem; }
 .bin__icon, .bin__name { position: relative; z-index: 1; display: block; text-shadow: 0 1px 2px rgba(0,0,0,.45); pointer-events: none; }
 .bin__icon { display: grid; place-items: center; height: 55%; margin-top: 10%; }
-.bin__icon img { width: min(74%, 7rem); max-height: 100%; object-fit: contain; filter: drop-shadow(0 .1rem .1rem rgba(0,0,0,.22)); }
+.bin__icon img { width: min(63%, 6rem); max-height: 100%; object-fit: contain; filter: drop-shadow(0 .1rem .1rem rgba(0,0,0,.22)); }
 .bin__name { margin-top: .18rem; padding: 0 .1rem; font-size: clamp(.56rem, 1.12vw, .95rem); font-weight: 950; line-height: 1.05; word-break: break-word; }
 .bin.is-success { animation: binSuccess .45s ease-out; }
 .bin.is-error { animation: binError .45s ease-out; }
@@ -218,6 +218,9 @@ button { font: inherit; }
 .stepper button, .sound-toggle { min-width: 3rem; min-height: 3rem; border: 2px solid rgba(255,255,255,.75); border-radius: .65rem; background: #28563a; color: #fff; font-size: 1.7rem; font-weight: 900; cursor: pointer; touch-action: manipulation; }
 .stepper output { min-width: 5.5rem; color: #f7c744; text-align: center; }
 .stepper input { width: 2.7em; border: 0; padding: 0; outline: 0; background: transparent; color: inherit; font: inherit; font-weight: 950; text-align: right; pointer-events: none; }
+.stepper input[type='number'] { appearance: textfield; -moz-appearance: textfield; }
+.stepper input[type='number']::-webkit-inner-spin-button,
+.stepper input[type='number']::-webkit-outer-spin-button { margin: 0; -webkit-appearance: none; }
 .sound-toggle { min-width: 5rem; font-size: 1rem; }
 .sound-toggle.is-on { background: #4cad75; }
 .settings-actions { display: flex; justify-content: center; gap: 1rem; margin-top: 1.2rem; }
@@ -230,5 +233,4 @@ button { font: inherit; }
 
 @media (max-height: 550px) {
   .bin { min-height: 6.4rem; }
-  .trash-object { width: clamp(3.8rem, 6vw, 6.25rem); }
 }

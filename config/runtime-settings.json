@@ -2,5 +2,7 @@
   "roundDurationSeconds": 30,
   "minimumItemsPerPlayer": 3,
   "itemLifetimeMs": 8000,
-  "soundEnabled": false
+  "soundEnabled": true,
+  "trashScale": 130,
+  "binScale": 100
 }

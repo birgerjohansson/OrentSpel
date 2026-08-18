@@ -13,10 +13,14 @@ const validSettings = value => {
   const duration = Number(value.roundDurationSeconds);
   const items = Number(value.minimumItemsPerPlayer);
   const lifetime = Number(value.itemLifetimeMs);
+  const trashScale = Number(value.trashScale);
+  const binScale = Number(value.binScale);
   if (!Number.isInteger(duration) || duration < 10 || duration > 300 || duration % 10) return null;
   if (!Number.isInteger(items) || items < 1 || items > 6) return null;
   if (!Number.isInteger(lifetime) || lifetime < 5000 || lifetime > 30000) return null;
-  return { roundDurationSeconds: duration, minimumItemsPerPlayer: items, itemLifetimeMs: lifetime, soundEnabled: Boolean(value.soundEnabled) };
+  if (!Number.isInteger(trashScale) || trashScale < 60 || trashScale > 130 || trashScale % 10) return null;
+  if (!Number.isInteger(binScale) || binScale < 60 || binScale > 130 || binScale % 10) return null;
+  return { roundDurationSeconds: duration, minimumItemsPerPlayer: items, itemLifetimeMs: lifetime, soundEnabled: Boolean(value.soundEnabled), trashScale, binScale };
 };
 
 createServer(async (request, response) => {

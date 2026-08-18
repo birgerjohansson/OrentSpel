@@ -40,8 +40,12 @@ export class Renderer {
   }
 
   showGame(scores) {
+    const trashScale = this.config.settings.trashScale / 100;
+    const binScale = this.config.settings.binScale / 100;
+    const trashSize = Math.min(Math.max(68, window.innerWidth * .042), 116) * trashScale;
+    const binWidth = Math.max(64, window.innerWidth * .14) * binScale;
     this.root.innerHTML = `
-      <section class="game" aria-label="Sopsorteringsspel">
+      <section class="game" aria-label="Sopsorteringsspel" style="--trash-size:${trashSize}px;--bin-width:${binWidth}px">
         <div class="hud">
           ${this.config.players.map(player => `<div class="player-score" data-score="${player.id}" style="--player-color:${player.color}" aria-label="Poäng"><strong>${scores.get(player.id)}</strong></div>`).join('')}
           <output class="game-timer" aria-label="Tid kvar" style="--progress: 1"><span>02:00</span></output>
@@ -142,6 +146,8 @@ export class Renderer {
             ${this.settingControl('Speltid', 'roundDurationSeconds', settings.roundDurationSeconds, 'sek', 10, 300, 10, 'sek')}
             ${this.settingControl('Skräp per färg', 'minimumItemsPerPlayer', settings.minimumItemsPerPlayer, '', 1, 6, 1, '')}
             ${this.settingControl('Skräp försvinner efter', 'itemLifetimeMs', settings.itemLifetimeMs / 1000, 'sek', 5, 30, 1, 'sek')}
+            ${this.settingControl('Skräpstorlek', 'trashScale', settings.trashScale, '%', 60, 130, 10, '%')}
+            ${this.settingControl('Tunnstorlek', 'binScale', settings.binScale, '%', 60, 130, 10, '%')}
             <div class="setting-row"><span>Ljud</span><button class="sound-toggle ${settings.soundEnabled ? 'is-on' : ''}" type="button" data-sound="${settings.soundEnabled}">${settings.soundEnabled ? 'PÅ' : 'AV'}</button></div>
           </div>
           <p class="settings-status" data-settings-status aria-live="polite"></p>
@@ -170,7 +176,7 @@ export class Renderer {
       const get = key => Number(this.root.querySelector(`[data-setting="${key}"]`).value);
       saveButton.disabled = true;
       try {
-        await onSave({ roundDurationSeconds: get('roundDurationSeconds'), minimumItemsPerPlayer: get('minimumItemsPerPlayer'), itemLifetimeMs: get('itemLifetimeMs') * 1000, soundEnabled: this.root.querySelector('.sound-toggle').dataset.sound === 'true' });
+        await onSave({ roundDurationSeconds: get('roundDurationSeconds'), minimumItemsPerPlayer: get('minimumItemsPerPlayer'), itemLifetimeMs: get('itemLifetimeMs') * 1000, soundEnabled: this.root.querySelector('.sound-toggle').dataset.sound === 'true', trashScale: get('trashScale'), binScale: get('binScale') });
       } catch (error) {
         this.root.querySelector('[data-settings-status]').textContent = 'Kunde inte spara. Kontrollera serveranslutningen och försök igen.';
         saveButton.disabled = false;

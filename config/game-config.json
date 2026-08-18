@@ -18,7 +18,7 @@
     { "id": "plastic", "label": "Plast", "binColor": "#961e82", "binText": "#fff", "binAsset": "Resources/plastforpackningar_rgb.png", "assets": ["Resources/cup.png", "Resources/chips.png"] },
     { "id": "metal", "label": "Metall", "binColor": "#5a6e78", "binAsset": "Resources/metallforpackningar_rgb.png", "assets": ["Resources/can.png"] },
     { "id": "paper", "label": "Tidningar", "binColor": "#0082be", "binAsset": "Resources/tidningar_rgb.png", "assets": ["Resources/candy.png", "Resources/Chocolate.png"] },
-    { "id": "glass", "label": "Glas", "binColor": "#1daf8e", "binAsset": "Resources/ofargade_glasforpackningar_rgb.png", "assets": ["Resources/glass bottle.png"] },
-    { "id": "food", "label": "Matavfall", "binColor": "#00a04b", "binAsset": "Resources/matavfall_rgb.png", "assets": ["Resources/banana peel 2.png"] }
+    { "id": "glass", "label": "Glas", "binColor": "#1daf8e", "binAsset": "Resources/ofargade_glasforpackningar_rgb.png", "assets": ["Resources/glass_bottle.png"] },
+    { "id": "food", "label": "Matavfall", "binColor": "#00a04b", "binAsset": "Resources/matavfall_rgb.png", "assets": ["Resources/banana_peel_2.png"] }
   ]
 }

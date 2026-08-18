@@ -49,7 +49,7 @@ export class GameController {
 
   findOpenPosition() {
     const area = this.renderer.playArea.getBoundingClientRect();
-    const width = Math.min(Math.max(68, area.width * .042), 116);
+    const width = Math.min(Math.max(68, area.width * .042), 116) * (this.config.settings.trashScale / 100);
     const height = width * 1.08;
     const binTops = [...this.renderer.root.querySelectorAll('.bin')].map(bin => bin.getBoundingClientRect().top - area.top);
     const safeBottom = Math.max(90, Math.min(...binTops) - height - 18);

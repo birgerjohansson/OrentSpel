@@ -8,10 +8,10 @@ export class SettingsStore {
       if (response.ok) {
         const settings = await response.json();
         this.writeLocal(settings);
-        return settings;
+        return { ...defaultSettings, ...settings };
       }
     } catch { /* Statisk hosting har ingen API-endpoint. */ }
-    return localSettings || defaultSettings;
+    return { ...defaultSettings, ...(localSettings || {}) };
   }
 
   async save(settings) {
@@ -22,7 +22,7 @@ export class SettingsStore {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings)
       });
-      if (response.ok) return await response.json();
+      if (response.ok) return { ...settings, ...await response.json() };
     } catch { /* Lokalt lagrade inställningar fungerar utan server. */ }
     return settings;
   }
