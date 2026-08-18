@@ -1,17 +1,18 @@
-const CACHE_NAME = 'orent-spel-v1';
+const CACHE_NAME = 'orent-spel-v2';
 const APP_SHELL = [
   '/',
   '/index.html',
   '/styles.css',
   '/animations/game-animations.css',
   '/config/game-config.json',
-  '/api/settings',
+  '/config/runtime-settings.json',
   '/js/main.js',
   '/js/audio/SoundManager.js',
   '/js/logic/GameController.js',
   '/js/logic/GameState.js',
   '/js/logic/ItemFactory.js',
   '/js/logic/SortRules.js',
+  '/js/logic/SettingsStore.js',
   '/js/logic/StatisticsStore.js',
   '/js/ui/Renderer.js',
   '/Resources/scene_school.png',

@@ -1,15 +1,17 @@
 import { Renderer } from './ui/Renderer.js';
 import { GameController } from './logic/GameController.js';
 import { StatisticsStore } from './logic/StatisticsStore.js';
+import { SettingsStore } from './logic/SettingsStore.js';
 
-async function loadConfig() {
-  const [configResponse, settingsResponse] = await Promise.all([
+async function loadConfig(settingsStore) {
+  const [configResponse, defaultsResponse] = await Promise.all([
     fetch('./config/game-config.json'),
-    fetch('/api/settings', { cache: 'no-store' })
+    fetch('./config/runtime-settings.json')
   ]);
-  if (!configResponse.ok || !settingsResponse.ok) throw new Error('Kunde inte läsa spelkonfigurationen.');
+  if (!configResponse.ok || !defaultsResponse.ok) throw new Error('Kunde inte läsa spelkonfigurationen.');
   const config = await configResponse.json();
-  const settings = await settingsResponse.json();
+  const defaults = await defaultsResponse.json();
+  const settings = await settingsStore.load(defaults);
   Object.assign(config.game, settings);
   config.settings = settings;
   return config;
@@ -18,15 +20,14 @@ async function loadConfig() {
 async function boot() {
   const root = document.querySelector('#app');
   try {
-    const config = await loadConfig();
+    const settingsStore = new SettingsStore();
+    const config = await loadConfig(settingsStore);
     const renderer = new Renderer(root, config);
     const statistics = new StatisticsStore();
     const showStart = () => renderer.showStart(
       () => renderer.showCountdown(() => new GameController(renderer, config, showStart, statistics).start()),
       () => renderer.showSettings(config.settings, async settings => {
-        const response = await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings) });
-        if (!response.ok) throw new Error('Kunde inte spara inställningarna.');
-        const saved = await response.json();
+        const saved = await settingsStore.save(settings);
         Object.assign(config.game, saved); config.settings = saved;
         showStart();
       }, showStart, () => statistics.clear())

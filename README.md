@@ -12,6 +12,8 @@ node server.js
 
 Öppna sedan `http://localhost:8000`. Servern lyssnar även på det lokala nätverket, så andra enheter kan öppna `http://<datorns-lan-ip>:8000`. För bästa upplevelse: använd en stor liggande multitouch-skärm i en modern webbläsare.
 
+Spelet kan också laddas upp till ren statisk hosting, exempelvis GitHub Pages eller ett vanligt webbhotell. Då används [config/runtime-settings.json](config/runtime-settings.json) som standard och spelinställningar sparas lokalt i den aktuella webbläsaren.
+
 ## Offline-läge
 
 Efter att spelet har öppnats en gång cachar en service worker spelkoden, bilderna och de senast hämtade inställningarna. Spelet kan då starta och spelas även om anslutningen till servern tillfälligt försvinner.
@@ -32,7 +34,7 @@ Resources/        Tillhandahållna bildresurser
 
 ## Dolda spelinställningar
 
-Håll kvar fingret på **ORENT SPEL** på startsidan i tre sekunder för att öppna inställningarna. Där går det att ändra speltid i sekunder, mängden skräp, hur snabbt skräp försvinner och ljud av/på. Varje skräpobjekt får en slumpad livstid inom ±25 % av det valda värdet. När ljud är på hörs tick de sista fem sekunderna, olika ljud för rätt/fel sortering och en fanfar på resultatsidan. Inställningarna sparas i [config/runtime-settings.json](config/runtime-settings.json) och läses av vid varje spelstart. Resultatsidan återgår automatiskt till startsidan efter en minut.
+Håll kvar fingret på **ORENT SPEL** på startsidan i tre sekunder för att öppna inställningarna. Där går det att ändra speltid i sekunder, mängden skräp, hur snabbt skräp försvinner och ljud av/på. Varje skräpobjekt får en slumpad livstid inom ±25 % av det valda värdet. När ljud är på hörs tick de sista fem sekunderna, olika ljud för rätt/fel sortering och en fanfar på resultatsidan. Vid statisk hosting sparas ändringarna lokalt i webbläsaren; med `server.js` sparas de även i [config/runtime-settings.json](config/runtime-settings.json). Resultatsidan återgår automatiskt till startsidan efter en minut.
 
 ## Ändra regler
 
