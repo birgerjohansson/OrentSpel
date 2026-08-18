@@ -134,7 +134,8 @@ button { font: inherit; }
   left: 0;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(5, minmax(4rem, 14vw));
+  justify-content: center;
   gap: clamp(.15rem, .5vw, .55rem);
   align-items: end;
   padding: .5rem max(.45rem, env(safe-area-inset-left)) max(.5rem, env(safe-area-inset-bottom));
@@ -157,7 +158,8 @@ button { font: inherit; }
 .bin::before { content: ''; position: absolute; top: 0; left: -4%; width: 108%; height: 12%; border-radius: .55rem; background: rgba(255,255,255,.3); }
 .bin::after { content: ''; position: absolute; inset: 13% 11% 2%; border: 2px solid rgba(0,0,0,.16); border-radius: .3rem .3rem .9rem .9rem; }
 .bin__icon, .bin__name { position: relative; z-index: 1; display: block; text-shadow: 0 1px 2px rgba(0,0,0,.45); pointer-events: none; }
-.bin__icon { margin-top: 12%; font-size: clamp(1.4rem, 3.3vw, 3.2rem); line-height: 1; }
+.bin__icon { display: grid; place-items: center; height: 55%; margin-top: 10%; }
+.bin__icon img { width: min(74%, 7rem); max-height: 100%; object-fit: contain; filter: drop-shadow(0 .1rem .1rem rgba(0,0,0,.22)); }
 .bin__name { margin-top: .18rem; padding: 0 .1rem; font-size: clamp(.56rem, 1.12vw, .95rem); font-weight: 950; line-height: 1.05; word-break: break-word; }
 .bin.is-success { animation: binSuccess .45s ease-out; }
 .bin.is-error { animation: binError .45s ease-out; }

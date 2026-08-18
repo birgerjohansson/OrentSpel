@@ -25,7 +25,7 @@ export class Renderer {
           <output class="game-timer" aria-label="Tid kvar" style="--progress: 1"><span>02:00</span></output>
         </div>
         <div class="play-area" aria-label="Skräp att sortera"></div>
-        <nav class="bins" aria-label="Soptunnor">${this.config.categories.map(category => `<button class="bin" type="button" data-bin="${category.id}" style="--bin-color:${category.binColor};--bin-text:${category.binText || '#fff'}"><span class="bin__icon">${escapeHTML(category.icon)}</span><span class="bin__name">${escapeHTML(category.label)}</span></button>`).join('')}</nav>
+        <nav class="bins" aria-label="Soptunnor">${this.config.categories.map(category => `<button class="bin" type="button" data-bin="${category.id}" aria-label="${escapeHTML(category.label)}" style="--bin-color:${category.binColor};--bin-text:${category.binText || '#fff'}"><span class="bin__icon"><img src="${encodeURI(category.binAsset)}" alt=""></span></button>`).join('')}</nav>
       </section>`;
     this.game = this.root.querySelector('.game');
     this.playArea = this.root.querySelector('.play-area');
