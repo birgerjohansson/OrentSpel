@@ -17,6 +17,28 @@ export class Renderer {
     this.addLongPress(this.root.querySelector('.game-title'), onSettings);
   }
 
+  showCountdown(onFinished) {
+    this.root.innerHTML = `
+      <section class="countdown-screen" aria-live="assertive" aria-label="Spelet börjar snart">
+        <span class="countdown-label">GÖR ER REDO</span>
+        <strong class="countdown-number">3</strong>
+      </section>`;
+    const number = this.root.querySelector('.countdown-number');
+    let value = 3;
+    const interval = window.setInterval(() => {
+      value -= 1;
+      if (value === 0) {
+        window.clearInterval(interval);
+        onFinished();
+        return;
+      }
+      number.textContent = value;
+      number.classList.remove('is-changing');
+      void number.offsetWidth;
+      number.classList.add('is-changing');
+    }, 1000);
+  }
+
   showGame(scores) {
     this.root.innerHTML = `
       <section class="game" aria-label="Sopsorteringsspel">
@@ -61,6 +83,7 @@ export class Renderer {
     const timer = this.root.querySelector('.game-timer');
     timer.style.setProperty('--progress', String(seconds / this.config.game.roundDurationSeconds));
     timer.querySelector('span').textContent = `${minutes}:${remainder}`;
+    timer.classList.toggle('is-urgent', seconds > 0 && seconds <= 5);
   }
 
   flashBin(binId, success) {

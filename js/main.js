@@ -20,7 +20,7 @@ async function boot() {
     const config = await loadConfig();
     const renderer = new Renderer(root, config);
     const showStart = () => renderer.showStart(
-      () => new GameController(renderer, config, showStart).start(),
+      () => renderer.showCountdown(() => new GameController(renderer, config, showStart).start()),
       () => renderer.showSettings(config.settings, async settings => {
         const response = await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings) });
         if (!response.ok) throw new Error('Kunde inte spara inställningarna.');

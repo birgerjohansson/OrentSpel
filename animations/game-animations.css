@@ -3,5 +3,7 @@
 @keyframes binError { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-7px); } 75% { transform: translateX(7px); } }
 @keyframes objectArrive { from { opacity: 0; transform: scale(.45) rotate(-12deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
 @keyframes objectExpire { to { opacity: 0; transform: scale(.55) rotate(12deg); } }
+@keyframes countdownPop { from { transform: scale(1.35); opacity: .35; } to { transform: scale(1); opacity: 1; } }
+@keyframes timerUrgentPulse { 0%, 100% { transform: scale(1); box-shadow: 0 .2rem .7rem rgba(0,0,0,.25); } 50% { transform: scale(1.16); box-shadow: 0 0 1.4rem .4rem rgba(247,199,68,.75); } }
 .trash-object.is-arriving { animation: objectArrive .28s cubic-bezier(.2,.9,.25,1.35); }
 .trash-object.is-expiring { pointer-events: none; animation: objectExpire .3s ease-in forwards; }
