@@ -9,7 +9,7 @@ export class GameController {
     this.onReturnToStart = onReturnToStart;
     this.state = new GameState(config); this.factory = new ItemFactory(config); this.sound = new SoundManager(config.settings.soundEnabled);
     this.elements = new Map(); this.dragging = new Map(); this.spawnTimer = null; this.clockTimer = null; this.resultTimer = null;
-    this.isRunning = false; this.endsAt = 0;
+    this.isRunning = false; this.endsAt = 0; this.lastTickSecond = null;
   }
 
   start() {
@@ -138,6 +138,10 @@ export class GameController {
   updateClock() {
     const remaining = Math.max(0, Math.ceil((this.endsAt - performance.now()) / 1000));
     this.renderer.updateTimer(remaining);
+    if (remaining > 0 && remaining <= 5 && remaining !== this.lastTickSecond) {
+      this.sound.play('tick');
+      this.lastTickSecond = remaining;
+    }
     if (remaining === 0) this.finish();
   }
 
@@ -149,6 +153,7 @@ export class GameController {
     for (const item of this.state.activeItems.values()) window.clearTimeout(item.expiry);
     this.dragging.clear();
     this.renderer.showResults(this.state.scores, () => this.returnToStart());
+    this.sound.play('fanfare');
     this.resultTimer = window.setTimeout(() => this.returnToStart(), 60000);
   }
 

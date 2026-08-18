@@ -1,6 +1,6 @@
 {
-  "roundDurationSeconds": 60,
-  "minimumItemsPerPlayer": 6,
-  "itemLifetimeMs": 5000,
-  "soundEnabled": true
+  "roundDurationSeconds": 20,
+  "minimumItemsPerPlayer": 3,
+  "itemLifetimeMs": 8000,
+  "soundEnabled": false
 }
