@@ -3,16 +3,25 @@ const escapeHTML = value => String(value).replace(/[&<>'"]/g, char => ({ '&': '&
 export class Renderer {
   constructor(root, config) { this.root = root; this.config = config; }
 
-  showStart(onStart) {
-    this.root.innerHTML = '<section class="start-screen"><div class="start-content"><h1>ORENT SPEL</h1><button class="start-button" type="button">STARTA</button></div></section>';
-    this.root.querySelector('button').addEventListener('click', onStart, { once: true });
+  showStart(onStart, onSettings) {
+    this.root.innerHTML = `
+      <section class="start-screen">
+        <div class="start-content">
+          <h1 class="game-title">ORENT SPEL</h1>
+          <p class="start-instructions">Varje spelare väljer en färg.<br>Sortera sedan avfallet i rätt tunna.</p>
+          <div class="color-choices" aria-label="Välj en av dessa spelarfärger">${this.config.players.map(player => `<span class="color-choice" style="--player-color:${player.color}" aria-label="Spelarfärg"></span>`).join('')}</div>
+          <button class="start-button" type="button">STARTA</button>
+        </div>
+      </section>`;
+    this.root.querySelector('.start-button').addEventListener('click', onStart, { once: true });
+    this.addLongPress(this.root.querySelector('.game-title'), onSettings);
   }
 
   showGame(scores) {
     this.root.innerHTML = `
       <section class="game" aria-label="Sopsorteringsspel">
         <div class="hud">
-          ${this.config.players.map(player => `<div class="player-score" data-score="${player.id}" style="--player-color:${player.color}"><span class="player-dot"></span><span>${player.name}</span><strong>${scores.get(player.id)}</strong></div>`).join('')}
+          ${this.config.players.map(player => `<div class="player-score" data-score="${player.id}" style="--player-color:${player.color}" aria-label="Poäng"><strong>${scores.get(player.id)}</strong></div>`).join('')}
           <output class="game-timer" aria-label="Tid kvar" style="--progress: 1"><span>02:00</span></output>
         </div>
         <div class="play-area" aria-label="Skräp att sortera"></div>
@@ -79,10 +88,52 @@ export class Renderer {
         <div class="result-card">
           <p class="result-kicker">ORENT SPEL · TIDEN ÄR SLUT</p>
           <h1>Resultat</h1>
-          <ol class="result-list">${ranking.map((player, index) => `<li style="--player-color:${player.color}"><span class="result-place">${index + 1}</span><span class="player-dot"></span><span>${player.name}</span><strong>${scores.get(player.id)} p</strong></li>`).join('')}</ol>
+          <ol class="result-list">${ranking.map((player, index) => `<li style="--player-color:${player.color}" aria-label="Placering ${index + 1}, ${scores.get(player.id)} poäng"><span class="result-place">${index + 1}</span><span class="player-dot"></span><strong>${scores.get(player.id)} p</strong></li>`).join('')}</ol>
           <button class="restart-button" type="button">SPELA IGEN</button>
         </div>
       </section>`;
     this.root.querySelector('.restart-button').addEventListener('click', onRestart, { once: true });
+  }
+
+  showSettings(settings, onSave, onClose) {
+    this.root.innerHTML = `
+      <section class="settings-screen" aria-label="Spelinställningar">
+        <div class="settings-card">
+          <h1>Inställningar</h1>
+          <p>Ändringarna sparas automatiskt för nästa omgång.</p>
+          <div class="settings-list">
+            ${this.settingControl('Speltid', 'roundDurationSeconds', settings.roundDurationSeconds / 60, 'min', 1, 5, 1, 'min')}
+            ${this.settingControl('Skräp per färg', 'minimumItemsPerPlayer', settings.minimumItemsPerPlayer, '', 1, 6, 1, '')}
+            ${this.settingControl('Skräp försvinner efter', 'itemLifetimeMs', settings.itemLifetimeMs / 1000, 'sek', 5, 30, 1, 'sek')}
+            <div class="setting-row"><span>Ljud</span><button class="sound-toggle ${settings.soundEnabled ? 'is-on' : ''}" type="button" data-sound="${settings.soundEnabled}">${settings.soundEnabled ? 'PÅ' : 'AV'}</button></div>
+          </div>
+          <div class="settings-actions"><button class="secondary-button" type="button" data-close>AVBRYT</button><button class="restart-button" type="button" data-save>SPARA</button></div>
+        </div>
+      </section>`;
+    this.root.querySelectorAll('[data-adjust]').forEach(button => button.addEventListener('click', () => {
+      const input = this.root.querySelector(`[data-setting="${button.dataset.adjust}"]`);
+      const next = Number(input.value) + Number(button.dataset.delta);
+      input.value = String(Math.max(Number(input.min), Math.min(Number(input.max), next)));
+    }));
+    this.root.querySelector('.sound-toggle').addEventListener('click', event => {
+      const button = event.currentTarget; const enabled = button.dataset.sound !== 'true';
+      button.dataset.sound = String(enabled); button.textContent = enabled ? 'PÅ' : 'AV'; button.classList.toggle('is-on', enabled);
+    });
+    this.root.querySelector('[data-close]').addEventListener('click', onClose);
+    this.root.querySelector('[data-save]').addEventListener('click', async () => {
+      const get = key => Number(this.root.querySelector(`[data-setting="${key}"]`).value);
+      await onSave({ roundDurationSeconds: get('roundDurationSeconds') * 60, minimumItemsPerPlayer: get('minimumItemsPerPlayer'), itemLifetimeMs: get('itemLifetimeMs') * 1000, soundEnabled: this.root.querySelector('.sound-toggle').dataset.sound === 'true' });
+    });
+  }
+
+  settingControl(label, key, value, suffix, min, max, step, ariaSuffix) {
+    return `<div class="setting-row"><span>${label}</span><div class="stepper"><button type="button" data-adjust="${key}" data-delta="-${step}" aria-label="Minska ${label}">−</button><output><input type="number" data-setting="${key}" value="${value}" min="${min}" max="${max}" step="${step}" readonly>${suffix ? ` ${suffix}` : ''}</output><button type="button" data-adjust="${key}" data-delta="${step}" aria-label="Öka ${label}">+</button></div></div>`;
+  }
+
+  addLongPress(element, callback) {
+    let timer;
+    const clear = () => window.clearTimeout(timer);
+    element.addEventListener('pointerdown', event => { event.preventDefault(); timer = window.setTimeout(callback, 3000); });
+    element.addEventListener('pointerup', clear); element.addEventListener('pointerleave', clear); element.addEventListener('pointercancel', clear);
   }
 }

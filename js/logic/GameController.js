@@ -6,7 +6,7 @@ import { SoundManager } from '../audio/SoundManager.js';
 export class GameController {
   constructor(renderer, config) {
     this.renderer = renderer; this.config = config;
-    this.state = new GameState(config); this.factory = new ItemFactory(config); this.sound = new SoundManager();
+    this.state = new GameState(config); this.factory = new ItemFactory(config); this.sound = new SoundManager(config.settings.soundEnabled);
     this.elements = new Map(); this.dragging = new Map(); this.spawnTimer = null; this.clockTimer = null;
     this.isRunning = false; this.endsAt = 0;
   }

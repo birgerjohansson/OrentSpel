@@ -1,7 +1,7 @@
 {
   "game": {
     "minimumItemsPerPlayer": 2,
-    "roundDurationSeconds": 120,
+    "roundDurationSeconds": 60,
     "itemLifetimeMs": 12000,
     "spawnCheckMs": 800,
     "correctScore": 10,
@@ -15,12 +15,12 @@
     { "id": "green", "name": "Spelare 4", "color": "#51c878" }
   ],
   "categories": [
-    { "id": "plastic", "label": "Plast", "binColor": "#e8b92a", "binText": "#253221", "icon": "♳", "assets": ["Resources/cup.png", "Resources/chips.png"] },
-    { "id": "metal", "label": "Metall", "binColor": "#7b91a0", "icon": "♜", "assets": ["Resources/can.png"] },
-    { "id": "paper", "label": "Papper", "binColor": "#3f89c9", "icon": "▤", "assets": ["Resources/candy.png", "Resources/Chocolate.png"] },
+    { "id": "plastic", "label": "Plast", "binColor": "#4cad75", "binText": "#fff", "icon": "♳", "assets": ["Resources/cup.png", "Resources/chips.png"] },
+    { "id": "metal", "label": "Metall", "binColor": "#4cad75", "icon": "♜", "assets": ["Resources/can.png"] },
+    { "id": "paper", "label": "Papper", "binColor": "#4cad75", "icon": "▤", "assets": ["Resources/candy.png", "Resources/Chocolate.png"] },
     { "id": "glass", "label": "Glas", "binColor": "#4cad75", "icon": "♧", "assets": ["Resources/glass bottle.png"] },
-    { "id": "food", "label": "Matavfall", "binColor": "#815534", "icon": "♨", "assets": ["Resources/banana peel 2.png"] },
-    { "id": "battery", "label": "Batterier", "binColor": "#e34d3e", "icon": "▰", "assets": ["Resources/trash bag - level 0.png", "Resources/trash bag - level1.png"] },
-    { "id": "electronics", "label": "Elektronik", "binColor": "#8057a5", "icon": "⌁", "assets": ["Resources/Trash bin.png", "Resources/large trash bag.png"] }
+    { "id": "food", "label": "Matavfall", "binColor": "#4cad75", "icon": "♨", "assets": ["Resources/banana peel 2.png"] },
+    { "id": "battery", "label": "Batterier", "binColor": "#4cad75", "icon": "▰", "assets": ["Resources/trash bag - level 0.png", "Resources/trash bag - level1.png"] },
+    { "id": "electronics", "label": "Elektronik", "binColor": "#4cad75", "icon": "⌁", "assets": ["Resources/Trash bin.png", "Resources/large trash bag.png"] }
   ]
 }

@@ -1,7 +1,8 @@
 export class SoundManager {
-  constructor() { this.context = null; }
+  constructor(enabled = true) { this.context = null; this.enabled = enabled; }
 
   play(kind) {
+    if (!this.enabled) return;
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     if (!AudioContext) return;
     this.context ??= new AudioContext();

@@ -1,16 +1,16 @@
 # Orent Spel
 
-Ett touch-fokuserat HTML5-spel för fyra samtidiga spelare. Varje spelare har en egen färg och drar sitt färgmärkta skräp till rätt soptunna. Rätt sortering ger 10 poäng, fel sortering ger -4 poäng. En spelomgång tar två minuter och avslutas med en resultatsida. Skräp som lämnas kvar försvinner efter 12 sekunder och ersätts automatiskt, så att alla alltid har saker att sortera.
+Ett touch-fokuserat HTML5-spel för fyra samtidiga spelare. Varje spelare har en egen färg och drar sitt färgmärkta skräp till rätt soptunna. Rätt sortering ger 10 poäng, fel sortering ger -4 poäng. En spelomgång tar en minut och avslutas med en resultatsida. Skräp som lämnas kvar försvinner efter 12 sekunder och ersätts automatiskt, så att alla alltid har saker att sortera.
 
 ## Starta lokalt
 
-Projektet består av rena statiska filer och använder ES-moduler, så kör det via en enkel lokal webbserver från projektmappen:
+Starta servern från projektmappen:
 
 ```sh
-python3 -m http.server 8000
+node server.js
 ```
 
-Öppna sedan `http://localhost:8000`. För bästa upplevelse: använd en stor liggande multitouch-skärm i en modern webbläsare.
+Öppna sedan `http://localhost:8000`. Servern lyssnar även på det lokala nätverket, så andra enheter kan öppna `http://<datorns-lan-ip>:8000`. För bästa upplevelse: använd en stor liggande multitouch-skärm i en modern webbläsare.
 
 ## Struktur
 
@@ -23,6 +23,10 @@ js/logic/         Spelregler, tillstånd, skapande av skräp och styrning
 js/ui/            DOM-rendering
 Resources/        Tillhandahållna bildresurser
 ```
+
+## Dolda spelinställningar
+
+Håll kvar fingret på **ORENT SPEL** på startsidan i tre sekunder för att öppna inställningarna. Där går det att ändra speltid, mängden skräp, hur snabbt skräp försvinner och ljud av/på. Inställningarna sparas i [config/runtime-settings.json](config/runtime-settings.json) och läses av vid varje spelstart.
 
 ## Ändra regler
 
