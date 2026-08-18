@@ -12,6 +12,12 @@ node server.js
 
 Öppna sedan `http://localhost:8000`. Servern lyssnar även på det lokala nätverket, så andra enheter kan öppna `http://<datorns-lan-ip>:8000`. För bästa upplevelse: använd en stor liggande multitouch-skärm i en modern webbläsare.
 
+## Offline-läge
+
+Efter att spelet har öppnats en gång cachar en service worker spelkoden, bilderna och de senast hämtade inställningarna. Spelet kan då starta och spelas även om anslutningen till servern tillfälligt försvinner.
+
+Service workers kräver en säker anslutning. Det fungerar automatiskt på `localhost`; för TV:n via en LAN-adress behövs **HTTPS** (eller en webbläsare/installation som uttryckligen tillåter lokalt HTTP) för att offline-läget ska kunna aktiveras.
+
 ## Struktur
 
 ```
