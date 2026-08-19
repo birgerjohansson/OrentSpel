@@ -60,7 +60,10 @@ export class Renderer {
       <section class="game" aria-label="Sopsorteringsspel" style="--trash-size:${trashSize}px;--bin-width:${binWidth}px;--bin-count:${level.categories.length}">
         <div class="hud">
           <div class="level-indicator">NIVÅ ${level.id}</div>
-          <div class="team-score" aria-label="Lagpoäng"><span class="score-colors">${players.map(player => `<i style="--player-color:${player.color}"></i>`).join('')}</span><strong data-team-score>${teamScore} / ${level.targetScore}</strong></div>
+          <div class="team-progress" aria-label="Framsteg mot nivåmålet">
+            <span class="score-colors">${players.map(player => `<i style="--player-color:${player.color}"></i>`).join('')}</span>
+            <div class="progress-meter" data-team-progress role="progressbar" aria-label="Sorterat skräp" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="--team-progress:0%"><span></span></div>
+          </div>
           <output class="game-timer" aria-label="Tid kvar" style="--progress: 1"><span>02:00</span></output>
         </div>
         <div class="play-area" aria-label="Skräp att sortera"></div>
@@ -92,7 +95,12 @@ export class Renderer {
     window.setTimeout(() => element.remove(), 300);
   }
 
-  updateTeamScore(score, target) { this.root.querySelector('[data-team-score]').textContent = `${score} / ${target}`; }
+  updateTeamScore(score, target) {
+    const meter = this.root.querySelector('[data-team-progress]');
+    const progress = Math.max(0, Math.min(100, Math.round(score / target * 100)));
+    meter.style.setProperty('--team-progress', `${progress}%`);
+    meter.setAttribute('aria-valuenow', String(progress));
+  }
 
   updateTimer(seconds, totalSeconds) {
     const minutes = Math.floor(seconds / 60);

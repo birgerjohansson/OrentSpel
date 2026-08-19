@@ -87,10 +87,11 @@ button { font: inherit; }
   pointer-events: none;
 }
 .player-dot { flex: 0 0 .85em; width: .85em; height: .85em; border-radius: 50%; background: var(--player-color); box-shadow: 0 0 .45em var(--player-color); }
-.level-indicator, .team-score { align-self: start; border: 3px solid rgba(255,255,255,.85); border-radius: 999px; padding: .55rem 1rem; background: rgba(10,31,20,.86); color: #fff; box-shadow: 0 .2rem .7rem rgba(0,0,0,.25); font-size: clamp(.85rem, 1.7vw, 1.35rem); font-weight: 950; }
+.level-indicator, .team-progress { align-self: start; border: 3px solid rgba(255,255,255,.85); border-radius: 999px; padding: .55rem 1rem; background: rgba(10,31,20,.86); color: #fff; box-shadow: 0 .2rem .7rem rgba(0,0,0,.25); font-size: clamp(.85rem, 1.7vw, 1.35rem); font-weight: 950; }
 .level-indicator { justify-self: start; }
-.team-score { justify-self: center; display: flex; align-items: center; gap: .75rem; min-width: clamp(10rem, 20vw, 18rem); justify-content: center; }
-.team-score strong { font-size: 1.15em; }
+.team-progress { justify-self: center; display: flex; align-items: center; gap: .75rem; width: clamp(14rem, 26vw, 28rem); }
+.progress-meter { flex: 1; height: clamp(1rem, 1.5vw, 1.5rem); overflow: hidden; border: 2px solid rgba(255,255,255,.9); border-radius: 999px; background: rgba(255,255,255,.2); box-shadow: inset 0 .12rem .3rem rgba(0,0,0,.3); }
+.progress-meter span { display: block; width: var(--team-progress); height: 100%; border-radius: inherit; background: linear-gradient(90deg, #52ca77, #d6ed4b); box-shadow: 0 0 .65rem rgba(214,237,75,.8); transition: width .3s ease; }
 .game-timer {
   grid-column: 3;
   justify-self: end;
