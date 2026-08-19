@@ -1,7 +1,8 @@
 export class GameState {
-  constructor(config) {
+  constructor(config, players = config.players) {
     this.config = config;
-    this.scores = new Map(config.players.map(player => [player.id, 0]));
+    this.scores = new Map(players.map(player => [player.id, 0]));
+    this.teamScore = 0;
     this.activeItems = new Map();
     this.roundStats = { correct: 0, wrong: 0, mistakes: {} };
   }
@@ -9,7 +10,8 @@ export class GameState {
   score(playerId, amount) {
     const value = (this.scores.get(playerId) ?? 0) + amount;
     this.scores.set(playerId, value);
-    return value;
+    this.teamScore = Math.max(0, this.teamScore + amount);
+    return this.teamScore;
   }
 
   itemsForPlayer(playerId) {

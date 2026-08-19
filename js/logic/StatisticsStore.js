@@ -14,7 +14,7 @@ export class StatisticsStore {
 
   recordRound(state) {
     const stats = this.load();
-    stats.bestScore = Math.max(stats.bestScore, ...state.scores.values());
+    stats.bestScore = Math.max(stats.bestScore, state.teamScore);
     stats.correct += state.roundStats.correct;
     stats.wrong += state.roundStats.wrong;
     for (const [mistake, count] of Object.entries(state.roundStats.mistakes)) stats.mistakes[mistake] = (stats.mistakes[mistake] || 0) + count;

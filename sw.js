@@ -1,16 +1,18 @@
-const CACHE_NAME = 'orent-spel-v2';
+const CACHE_NAME = 'orent-spel-levels-v1';
 const APP_SHELL = [
   '/',
   '/index.html',
   '/styles.css',
   '/animations/game-animations.css',
   '/config/game-config.json',
+  '/config/levels.json',
   '/config/runtime-settings.json',
   '/js/main.js',
   '/js/audio/SoundManager.js',
   '/js/logic/GameController.js',
   '/js/logic/GameState.js',
   '/js/logic/ItemFactory.js',
+  '/js/logic/LevelManager.js',
   '/js/logic/SortRules.js',
   '/js/logic/SettingsStore.js',
   '/js/logic/StatisticsStore.js',
@@ -61,6 +63,6 @@ async function networkFirst(request) {
   } catch {
     const cached = await caches.match(request);
     if (cached) return cached;
-    return new Response(JSON.stringify({ roundDurationSeconds: 60, minimumItemsPerPlayer: 2, itemLifetimeMs: 12000, soundEnabled: true }), { headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ difficulty: 'normal', soundEnabled: true, trashScale: 130, binScale: 100 }), { headers: { 'Content-Type': 'application/json' } });
   }
 }

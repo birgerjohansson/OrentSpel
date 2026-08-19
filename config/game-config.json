@@ -1,8 +1,5 @@
 {
   "game": {
-    "minimumItemsPerPlayer": 2,
-    "roundDurationSeconds": 60,
-    "itemLifetimeMs": 12000,
     "spawnCheckMs": 800,
     "correctScore": 10,
     "wrongScore": -4,

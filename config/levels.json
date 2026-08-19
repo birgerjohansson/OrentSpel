@@ -1,0 +1,13 @@
+{
+  "difficulty": {
+    "easy": { "label": "Lätt", "targetMultiplier": 0.8, "durationMultiplier": 1.2, "lifetimeMultiplier": 1.15 },
+    "normal": { "label": "Normal", "targetMultiplier": 1, "durationMultiplier": 1, "lifetimeMultiplier": 1 },
+    "hard": { "label": "Svår", "targetMultiplier": 1.2, "durationMultiplier": 0.85, "lifetimeMultiplier": 0.85 }
+  },
+  "levels": [
+    { "id": 1, "categoryIds": ["plastic", "food"], "durationSeconds": 60, "itemsPerPlayer": 1, "itemLifetimeMs": 18000, "baseTarget": 40 },
+    { "id": 2, "categoryIds": ["plastic", "food", "metal"], "durationSeconds": 60, "itemsPerPlayer": 2, "itemLifetimeMs": 14000, "baseTarget": 80 },
+    { "id": 3, "categoryIds": ["plastic", "food", "metal", "glass"], "durationSeconds": 60, "itemsPerPlayer": 2, "itemLifetimeMs": 11000, "baseTarget": 120 },
+    { "id": 4, "categoryIds": ["plastic", "food", "metal", "glass", "paper"], "durationSeconds": 60, "itemsPerPlayer": 3, "itemLifetimeMs": 8000, "baseTarget": 170 }
+  ]
+}

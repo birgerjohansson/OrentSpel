@@ -8,12 +8,19 @@ export class Renderer {
       <section class="start-screen">
         <div class="start-content">
           <h1 class="game-title">ORENT SPEL</h1>
-          <p class="start-instructions">Varje spelare väljer en färg.<br>Sortera sedan avfallet i rätt tunna.</p>
-          <div class="color-choices" aria-label="Välj en av dessa spelarfärger">${this.config.players.map(player => `<span class="color-choice" style="--player-color:${player.color}" aria-label="Spelarfärg"></span>`).join('')}</div>
+          <p class="start-instructions">Välj antal spelare och klara alla fyra nivåer tillsammans.</p>
+          <div class="player-count" role="group" aria-label="Antal spelare">${[1, 2, 3, 4].map(count => `<button type="button" data-player-count="${count}" class="${count === 1 ? 'is-selected' : ''}">${count}</button>`).join('')}</div>
+          <div class="color-choices" aria-label="Aktiva spelarfärger">${this.config.players.map((player, index) => `<span class="color-choice ${index ? 'is-inactive' : ''}" data-player-color="${index + 1}" style="--player-color:${player.color}" aria-label="Spelarfärg"></span>`).join('')}</div>
           <button class="start-button" type="button">STARTA</button>
         </div>
       </section>`;
-    this.root.querySelector('.start-button').addEventListener('click', onStart, { once: true });
+    let playerCount = 1;
+    this.root.querySelectorAll('[data-player-count]').forEach(button => button.addEventListener('click', () => {
+      playerCount = Number(button.dataset.playerCount);
+      this.root.querySelectorAll('[data-player-count]').forEach(option => option.classList.toggle('is-selected', option === button));
+      this.root.querySelectorAll('[data-player-color]').forEach(color => color.classList.toggle('is-inactive', Number(color.dataset.playerColor) > playerCount));
+    }));
+    this.root.querySelector('.start-button').addEventListener('click', () => onStart(playerCount), { once: true });
     this.addLongPress(this.root.querySelector('.game-title'), onSettings);
   }
 
@@ -39,19 +46,25 @@ export class Renderer {
     }, 1000);
   }
 
-  showGame(scores) {
+  showLevelIntro(level, players, onFinished) {
+    this.root.innerHTML = `<section class="level-screen"><div class="level-card"><p class="level-kicker">${escapeHTML(level.difficultyLabel)}</p><h1>Nivå ${level.id}</h1><p>Samla <strong>${level.targetScore} poäng</strong> tillsammans</p><div class="level-bins">${level.categories.map(category => `<span style="--bin-color:${category.binColor}"><img src="${encodeURI(category.binAsset)}" alt="${escapeHTML(category.label)}"></span>`).join('')}</div><div class="active-colors">${players.map(player => `<span style="--player-color:${player.color}"></span>`).join('')}</div></div></section>`;
+    window.setTimeout(onFinished, 2200);
+  }
+
+  showGame(teamScore, players, level) {
     const trashScale = this.config.settings.trashScale / 100;
     const binScale = this.config.settings.binScale / 100;
     const trashSize = Math.min(Math.max(68, window.innerWidth * .042), 116) * trashScale;
     const binWidth = Math.max(64, window.innerWidth * .14) * binScale;
     this.root.innerHTML = `
-      <section class="game" aria-label="Sopsorteringsspel" style="--trash-size:${trashSize}px;--bin-width:${binWidth}px">
+      <section class="game" aria-label="Sopsorteringsspel" style="--trash-size:${trashSize}px;--bin-width:${binWidth}px;--bin-count:${level.categories.length}">
         <div class="hud">
-          ${this.config.players.map(player => `<div class="player-score" data-score="${player.id}" style="--player-color:${player.color}" aria-label="Poäng"><strong>${scores.get(player.id)}</strong></div>`).join('')}
+          <div class="level-indicator">NIVÅ ${level.id}</div>
+          <div class="team-score" aria-label="Lagpoäng"><span class="score-colors">${players.map(player => `<i style="--player-color:${player.color}"></i>`).join('')}</span><strong data-team-score>${teamScore} / ${level.targetScore}</strong></div>
           <output class="game-timer" aria-label="Tid kvar" style="--progress: 1"><span>02:00</span></output>
         </div>
         <div class="play-area" aria-label="Skräp att sortera"></div>
-        <nav class="bins" aria-label="Soptunnor">${this.config.categories.map(category => `<button class="bin" type="button" data-bin="${category.id}" aria-label="${escapeHTML(category.label)}" style="--bin-color:${category.binColor};--bin-text:${category.binText || '#fff'}"><span class="bin__icon"><img src="${encodeURI(category.binAsset)}" alt=""></span></button>`).join('')}</nav>
+        <nav class="bins" aria-label="Soptunnor">${level.categories.map(category => `<button class="bin" type="button" data-bin="${category.id}" aria-label="${escapeHTML(category.label)}" style="--bin-color:${category.binColor};--bin-text:${category.binText || '#fff'}"><span class="bin__icon"><img src="${encodeURI(category.binAsset)}" alt=""></span></button>`).join('')}</nav>
       </section>`;
     this.game = this.root.querySelector('.game');
     this.playArea = this.root.querySelector('.play-area');
@@ -79,13 +92,13 @@ export class Renderer {
     window.setTimeout(() => element.remove(), 300);
   }
 
-  updateScore(playerId, score) { this.root.querySelector(`[data-score="${playerId}"] strong`).textContent = score; }
+  updateTeamScore(score, target) { this.root.querySelector('[data-team-score]').textContent = `${score} / ${target}`; }
 
-  updateTimer(seconds) {
+  updateTimer(seconds, totalSeconds) {
     const minutes = Math.floor(seconds / 60);
     const remainder = String(seconds % 60).padStart(2, '0');
     const timer = this.root.querySelector('.game-timer');
-    timer.style.setProperty('--progress', String(seconds / this.config.game.roundDurationSeconds));
+    timer.style.setProperty('--progress', String(seconds / totalSeconds));
     timer.querySelector('span').textContent = `${minutes}:${remainder}`;
     timer.classList.toggle('is-urgent', seconds > 0 && seconds <= 5);
   }
@@ -107,18 +120,19 @@ export class Renderer {
     window.setTimeout(() => element.remove(), 780);
   }
 
-  showResults(scores, onRestart, onShowStatistics) {
-    const ranking = [...this.config.players]
-      .sort((first, second) => scores.get(second.id) - scores.get(first.id));
-    this.root.innerHTML = `
-      <section class="result-screen" aria-label="Resultat">
-        <div class="result-card">
-          <p class="result-kicker">ORENT SPEL · TIDEN ÄR SLUT</p>
-          <h1>Resultat</h1>
-          <ol class="result-list">${ranking.map((player, index) => `<li style="--player-color:${player.color}" aria-label="Placering ${index + 1}, ${scores.get(player.id)} poäng"><span class="result-place">${index + 1}</span><span class="player-dot"></span><strong>${scores.get(player.id)} p</strong></li>`).join('')}</ol>
-          <div class="result-actions"><button class="stats-button" type="button" aria-label="Visa statistik">i</button><button class="restart-button" type="button">SPELA IGEN</button></div>
-        </div>
-      </section>`;
+  showLevelComplete(level, nextLevel, onNext) {
+    this.root.innerHTML = `<section class="result-screen"><div class="result-card success-card"><p class="result-kicker">MÅLET ÄR NÅTT</p><h1>Nivå ${level.id} klar!</h1><p>Nästa nivå har ${nextLevel.categories.length} tunnor och snabbare skräp.</p><strong class="next-level">Nivå ${nextLevel.id}</strong></div></section>`;
+    window.setTimeout(onNext, 2400);
+  }
+
+  showLevelFailed(level, score, onRetry, onStart) {
+    this.root.innerHTML = `<section class="result-screen"><div class="result-card failed-card"><p class="result-kicker">TIDEN ÄR SLUT</p><h1>Nivå ${level.id}</h1><p>Ni fick <strong>${score} av ${level.targetScore} poäng</strong>.</p><div class="result-actions"><button class="secondary-button" type="button" data-start>TILL STARTSIDAN</button><button class="restart-button" type="button" data-retry>FÖRSÖK IGEN</button></div></div></section>`;
+    this.root.querySelector('[data-retry]').addEventListener('click', onRetry, { once: true });
+    this.root.querySelector('[data-start]').addEventListener('click', onStart, { once: true });
+  }
+
+  showCampaignComplete(score, levelCount, onRestart, onShowStatistics) {
+    this.root.innerHTML = `<section class="result-screen" aria-label="Slutresultat"><div class="result-card success-card"><p class="result-kicker">ALLA NIVÅER KLARA</p><h1>Fantastiskt!</h1><p>Ni klarade ${levelCount} nivåer och samlade totalt</p><strong class="campaign-score">${score} poäng</strong><div class="result-actions"><button class="stats-button" type="button" aria-label="Visa statistik">i</button><button class="restart-button" type="button">TILL STARTSIDAN</button></div></div></section>`;
     this.root.querySelector('.restart-button').addEventListener('click', onRestart, { once: true });
     this.root.querySelector('.stats-button').addEventListener('click', onShowStatistics);
   }
@@ -131,7 +145,7 @@ export class Renderer {
     const modal = document.createElement('section');
     modal.className = 'statistics-modal';
     modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true'); modal.setAttribute('aria-label', 'Statistik');
-    modal.innerHTML = `<div class="statistics-card"><button class="statistics-close" type="button" aria-label="Stäng statistik">×</button><h2>Statistik</h2><dl><div><dt>Bästa poäng</dt><dd>${stats.bestScore} p</dd></div><div><dt>Rätt sorterat</dt><dd>${stats.correct}</dd></div><div><dt>Fel sorterat</dt><dd>${stats.wrong}</dd></div><div><dt>Vanligaste felsortering</dt><dd>${escapeHTML(commonMistake)}</dd></div></dl></div>`;
+    modal.innerHTML = `<div class="statistics-card"><button class="statistics-close" type="button" aria-label="Stäng statistik">×</button><h2>Statistik</h2><dl><div><dt>Bästa lagpoäng</dt><dd>${stats.bestScore} p</dd></div><div><dt>Rätt sorterat</dt><dd>${stats.correct}</dd></div><div><dt>Fel sorterat</dt><dd>${stats.wrong}</dd></div><div><dt>Vanligaste felsortering</dt><dd>${escapeHTML(commonMistake)}</dd></div></dl></div>`;
     this.root.append(modal);
     modal.querySelector('.statistics-close').addEventListener('click', () => modal.remove());
   }
@@ -143,9 +157,7 @@ export class Renderer {
           <h1>Inställningar</h1>
           <p>Ändringarna sparas automatiskt för nästa omgång.</p>
           <div class="settings-list">
-            ${this.settingControl('Speltid', 'roundDurationSeconds', settings.roundDurationSeconds, 'sek', 10, 300, 10, 'sek')}
-            ${this.settingControl('Skräp per färg', 'minimumItemsPerPlayer', settings.minimumItemsPerPlayer, '', 1, 6, 1, '')}
-            ${this.settingControl('Skräp försvinner efter', 'itemLifetimeMs', settings.itemLifetimeMs / 1000, 'sek', 5, 30, 1, 'sek')}
+            <div class="setting-row difficulty-row"><span>Svårighetsgrad</span><div class="difficulty-options">${['easy', 'normal', 'hard'].map((value, index) => `<button type="button" data-difficulty="${value}" class="${settings.difficulty === value ? 'is-selected' : ''}">${['LÄTT', 'NORMAL', 'SVÅR'][index]}</button>`).join('')}</div></div>
             ${this.settingControl('Skräpstorlek', 'trashScale', settings.trashScale, '%', 60, 130, 10, '%')}
             ${this.settingControl('Tunnstorlek', 'binScale', settings.binScale, '%', 60, 130, 10, '%')}
             <div class="setting-row"><span>Ljud</span><button class="sound-toggle ${settings.soundEnabled ? 'is-on' : ''}" type="button" data-sound="${settings.soundEnabled}">${settings.soundEnabled ? 'PÅ' : 'AV'}</button></div>
@@ -164,6 +176,7 @@ export class Renderer {
       const button = event.currentTarget; const enabled = button.dataset.sound !== 'true';
       button.dataset.sound = String(enabled); button.textContent = enabled ? 'PÅ' : 'AV'; button.classList.toggle('is-on', enabled);
     });
+    this.root.querySelectorAll('[data-difficulty]').forEach(button => button.addEventListener('click', () => this.root.querySelectorAll('[data-difficulty]').forEach(option => option.classList.toggle('is-selected', option === button))));
     this.root.querySelector('[data-close]').addEventListener('click', onClose);
     this.root.querySelector('[data-reset-statistics]').addEventListener('click', event => {
       onResetStatistics();
@@ -176,7 +189,7 @@ export class Renderer {
       const get = key => Number(this.root.querySelector(`[data-setting="${key}"]`).value);
       saveButton.disabled = true;
       try {
-        await onSave({ roundDurationSeconds: get('roundDurationSeconds'), minimumItemsPerPlayer: get('minimumItemsPerPlayer'), itemLifetimeMs: get('itemLifetimeMs') * 1000, soundEnabled: this.root.querySelector('.sound-toggle').dataset.sound === 'true', trashScale: get('trashScale'), binScale: get('binScale') });
+        await onSave({ difficulty: this.root.querySelector('[data-difficulty].is-selected').dataset.difficulty, soundEnabled: this.root.querySelector('.sound-toggle').dataset.sound === 'true', trashScale: get('trashScale'), binScale: get('binScale') });
       } catch (error) {
         this.root.querySelector('[data-settings-status]').textContent = 'Kunde inte spara. Kontrollera serveranslutningen och försök igen.';
         saveButton.disabled = false;

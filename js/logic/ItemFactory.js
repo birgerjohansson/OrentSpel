@@ -1,8 +1,8 @@
 export class ItemFactory {
-  constructor(config) { this.config = config; this.sequence = 0; }
+  constructor(config, categories = config.categories) { this.config = config; this.categories = categories; this.sequence = 0; }
 
   create(playerId) {
-    const category = this.pick(this.config.categories);
+    const category = this.pick(this.categories);
     const assets = category.assets || [];
     return {
       id: `trash-${++this.sequence}`,

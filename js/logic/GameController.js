@@ -1,23 +1,34 @@
 import { ItemFactory } from './ItemFactory.js';
 import { isCorrectSort } from './SortRules.js';
 import { GameState } from './GameState.js';
+import { LevelManager } from './LevelManager.js';
 import { SoundManager } from '../audio/SoundManager.js';
 import { StatisticsStore } from './StatisticsStore.js';
 
 export class GameController {
-  constructor(renderer, config, onReturnToStart, statistics = new StatisticsStore()) {
-    this.renderer = renderer; this.config = config;
-    this.onReturnToStart = onReturnToStart;
-    this.statistics = statistics;
-    this.state = new GameState(config); this.factory = new ItemFactory(config); this.sound = new SoundManager(config.settings.soundEnabled);
-    this.elements = new Map(); this.dragging = new Map(); this.spawnTimer = null; this.clockTimer = null; this.resultTimer = null;
-    this.isRunning = false; this.endsAt = 0; this.lastTickSecond = null;
+  constructor(renderer, config, levelConfig, playerCount, onReturnToStart, statistics = new StatisticsStore()) {
+    this.renderer = renderer; this.config = config; this.onReturnToStart = onReturnToStart; this.statistics = statistics;
+    this.players = config.players.slice(0, playerCount);
+    this.levels = new LevelManager(config, levelConfig, playerCount);
+    this.sound = new SoundManager(config.settings.soundEnabled);
+    this.levelIndex = 0; this.campaignScore = 0; this.resultTimer = null;
+    this.elements = new Map(); this.dragging = new Map();
   }
 
-  start() {
-    this.renderer.showGame(this.state.scores);
+  start() { this.prepareLevel(); }
+
+  prepareLevel() {
+    this.level = this.levels.get(this.levelIndex);
+    this.renderer.showLevelIntro(this.level, this.players, () => this.renderer.showCountdown(() => this.startLevel()));
+  }
+
+  startLevel() {
+    this.state = new GameState(this.config, this.players);
+    this.factory = new ItemFactory(this.config, this.level.categories);
+    this.elements.clear(); this.dragging.clear(); this.lastTickSecond = null;
+    this.renderer.showGame(this.state.teamScore, this.players, this.level);
     this.isRunning = true;
-    this.endsAt = performance.now() + this.config.game.roundDurationSeconds * 1000;
+    this.endsAt = performance.now() + this.level.durationSeconds * 1000;
     this.bindEvents(); this.ensureItems(); this.updateClock();
     this.spawnTimer = window.setInterval(() => this.ensureItems(), this.config.game.spawnCheckMs);
     this.clockTimer = window.setInterval(() => this.updateClock(), 250);
@@ -33,15 +44,12 @@ export class GameController {
 
   ensureItems() {
     if (!this.isRunning) return;
-    for (const player of this.config.players) {
-      while (this.state.itemsForPlayer(player.id) < this.config.game.minimumItemsPerPlayer) this.spawn(player);
-    }
+    for (const player of this.players) while (this.state.itemsForPlayer(player.id) < this.level.itemsPerPlayer) this.spawn(player);
   }
 
   spawn(player) {
     const item = this.factory.create(player.id);
-    const position = this.findOpenPosition();
-    const element = this.renderer.addItem(item, player, position);
+    const element = this.renderer.addItem(item, player, this.findOpenPosition());
     item.element = element;
     this.state.addItem(item); this.elements.set(item.id, element);
     item.expiry = window.setTimeout(() => this.expire(item), this.randomItemLifetime());
@@ -56,7 +64,8 @@ export class GameController {
     const existing = [...this.elements.values()].map(element => ({ x: parseFloat(element.style.left), y: parseFloat(element.style.top) }));
     for (let tries = 0; tries < 28; tries++) {
       const x = 8 + Math.random() * Math.max(1, area.width - width - 16);
-      const y = Math.max(92, area.height * .15) + Math.random() * Math.max(1, safeBottom - Math.max(92, area.height * .15));
+      const top = Math.max(92, area.height * .15);
+      const y = top + Math.random() * Math.max(1, safeBottom - top);
       if (existing.every(point => Math.hypot(point.x - x, point.y - y) > width * .75)) return { x, y };
     }
     return { x: Math.random() * Math.max(1, area.width - width), y: Math.max(92, Math.random() * Math.max(1, safeBottom)) };
@@ -77,9 +86,8 @@ export class GameController {
     const drag = this.dragging.get(event.pointerId);
     if (!drag) return;
     const area = this.renderer.playArea.getBoundingClientRect();
-    const width = drag.element.offsetWidth; const height = drag.element.offsetHeight;
-    const x = Math.max(0, Math.min(area.width - width, event.clientX - area.left - drag.offsetX));
-    const y = Math.max(0, Math.min(area.height - height, event.clientY - area.top - drag.offsetY));
+    const x = Math.max(0, Math.min(area.width - drag.element.offsetWidth, event.clientX - area.left - drag.offsetX));
+    const y = Math.max(0, Math.min(area.height - drag.element.offsetHeight, event.clientY - area.top - drag.offsetY));
     drag.element.style.left = `${x}px`; drag.element.style.top = `${y}px`;
   }
 
@@ -112,12 +120,15 @@ export class GameController {
     this.state.recordSort(item, binId, correct);
     const points = correct ? this.config.game.correctScore : this.config.game.wrongScore;
     const score = this.state.score(item.playerId, points);
-    this.renderer.updateScore(item.playerId, score);
+    this.renderer.updateTeamScore(score, this.level.targetScore);
     this.renderer.flashBin(binId, correct);
     this.renderer.feedback(x, y, `${points > 0 ? '+' : ''}${points}`, !correct);
     this.sound.play(correct ? 'correct' : 'wrong');
     this.remove(item);
-    window.setTimeout(() => this.ensureItems(), 80);
+    if (score >= this.level.targetScore) {
+      this.isRunning = false; this.stopTimers();
+      window.setTimeout(() => this.completeLevel(), 450);
+    } else window.setTimeout(() => this.ensureItems(), 80);
   }
 
   expire(item) {
@@ -132,37 +143,46 @@ export class GameController {
     this.renderer.removeItem(item.element, expired);
   }
 
-  randomItemLifetime() {
-    const baseLifetime = this.config.game.itemLifetimeMs;
-    // Varierar ±25 % runt det valda värdet så att skräp inte försvinner i takt.
-    return Math.round(baseLifetime * (.75 + Math.random() * .5));
-  }
+  randomItemLifetime() { return Math.round(this.level.itemLifetimeMs * (.75 + Math.random() * .5)); }
 
   updateClock() {
     const remaining = Math.max(0, Math.ceil((this.endsAt - performance.now()) / 1000));
-    this.renderer.updateTimer(remaining);
-    if (remaining > 0 && remaining <= 5 && remaining !== this.lastTickSecond) {
-      this.sound.play('tick');
-      this.lastTickSecond = remaining;
-    }
-    if (remaining === 0) this.finish();
+    this.renderer.updateTimer(remaining, this.level.durationSeconds);
+    if (remaining > 0 && remaining <= 5 && remaining !== this.lastTickSecond) { this.sound.play('tick'); this.lastTickSecond = remaining; }
+    if (remaining === 0) this.failLevel();
   }
 
-  finish() {
-    if (!this.isRunning) return;
-    this.isRunning = false;
-    window.clearInterval(this.spawnTimer);
-    window.clearInterval(this.clockTimer);
+  stopTimers() {
+    window.clearInterval(this.spawnTimer); window.clearInterval(this.clockTimer);
     for (const item of this.state.activeItems.values()) window.clearTimeout(item.expiry);
     this.dragging.clear();
+  }
+
+  completeLevel() {
+    this.campaignScore += this.state.teamScore;
     const statistics = this.statistics.recordRound(this.state);
-    this.renderer.showResults(this.state.scores, () => this.returnToStart(), () => this.renderer.showStatistics(statistics));
     this.sound.play('fanfare');
+    if (this.levelIndex === this.levels.count - 1) {
+      this.renderer.showCampaignComplete(this.campaignScore, this.levels.count, () => this.returnToStart(), () => this.renderer.showStatistics(statistics));
+      this.resultTimer = window.setTimeout(() => this.returnToStart(), 60000);
+      return;
+    }
+    const completed = this.level;
+    this.levelIndex += 1;
+    const next = this.levels.get(this.levelIndex);
+    this.renderer.showLevelComplete(completed, next, () => this.prepareLevel());
+  }
+
+  failLevel() {
+    if (!this.isRunning) return;
+    this.isRunning = false; this.stopTimers();
+    this.statistics.recordRound(this.state);
+    this.renderer.showLevelFailed(this.level, this.state.teamScore, () => {
+      window.clearTimeout(this.resultTimer);
+      this.renderer.showCountdown(() => this.startLevel());
+    }, () => this.returnToStart());
     this.resultTimer = window.setTimeout(() => this.returnToStart(), 60000);
   }
 
-  returnToStart() {
-    window.clearTimeout(this.resultTimer);
-    this.onReturnToStart();
-  }
+  returnToStart() { window.clearTimeout(this.resultTimer); this.onReturnToStart(); }
 }

@@ -1,7 +1,5 @@
 {
-  "roundDurationSeconds": 30,
-  "minimumItemsPerPlayer": 3,
-  "itemLifetimeMs": 8000,
+  "difficulty": "hard",
   "soundEnabled": true,
   "trashScale": 130,
   "binScale": 100

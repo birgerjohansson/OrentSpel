@@ -4,15 +4,16 @@ import { StatisticsStore } from './logic/StatisticsStore.js';
 import { SettingsStore } from './logic/SettingsStore.js';
 
 async function loadConfig(settingsStore) {
-  const [configResponse, defaultsResponse] = await Promise.all([
+  const [configResponse, defaultsResponse, levelsResponse] = await Promise.all([
     fetch('./config/game-config.json'),
-    fetch('./config/runtime-settings.json')
+    fetch('./config/runtime-settings.json'),
+    fetch('./config/levels.json')
   ]);
-  if (!configResponse.ok || !defaultsResponse.ok) throw new Error('Kunde inte läsa spelkonfigurationen.');
+  if (!configResponse.ok || !defaultsResponse.ok || !levelsResponse.ok) throw new Error('Kunde inte läsa spelkonfigurationen.');
   const config = await configResponse.json();
   const defaults = await defaultsResponse.json();
   const settings = await settingsStore.load(defaults);
-  Object.assign(config.game, settings);
+  config.levelConfig = await levelsResponse.json();
   config.settings = settings;
   return config;
 }
@@ -25,10 +26,10 @@ async function boot() {
     const renderer = new Renderer(root, config);
     const statistics = new StatisticsStore();
     const showStart = () => renderer.showStart(
-      () => renderer.showCountdown(() => new GameController(renderer, config, showStart, statistics).start()),
+      playerCount => new GameController(renderer, config, config.levelConfig, playerCount, showStart, statistics).start(),
       () => renderer.showSettings(config.settings, async settings => {
         const saved = await settingsStore.save(settings);
-        Object.assign(config.game, saved); config.settings = saved;
+        config.settings = saved;
         showStart();
       }, showStart, () => statistics.clear())
     );
