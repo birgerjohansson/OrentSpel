@@ -19,7 +19,7 @@ export class GameController {
 
   prepareLevel() {
     this.level = this.levels.get(this.levelIndex);
-    this.renderer.showLevelIntro(this.level, this.players, () => this.renderer.showCountdown(() => this.startLevel()));
+    this.renderer.showLevelIntro(this.level, this.players, () => this.renderer.showCountdown(() => this.startLevel(), this.level.backgroundAsset));
   }
 
   startLevel() {
@@ -193,7 +193,7 @@ export class GameController {
     this.statistics.recordRound(this.state);
     this.renderer.showLevelFailed(this.level, this.state.teamScore, () => {
       window.clearTimeout(this.resultTimer);
-      this.renderer.showCountdown(() => this.startLevel());
+      this.renderer.showCountdown(() => this.startLevel(), this.level.backgroundAsset);
     }, () => this.returnToStart());
     this.resultTimer = window.setTimeout(() => this.returnToStart(), 60000);
   }

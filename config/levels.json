@@ -5,12 +5,12 @@
     "hard": { "label": "Svår", "targetMultiplier": 1.2, "durationMultiplier": 0.85, "lifetimeMultiplier": 0.85 }
   },
   "levels": [
-    { "id": 1, "categoryIds": ["plastic", "food"], "durationSeconds": 35, "itemsPerPlayer": 1, "itemLifetimeMs": 16000, "baseTarget": 30 },
-    { "id": 2, "categoryIds": ["plastic", "food", "metal"], "durationSeconds": 35, "itemsPerPlayer": 2, "itemLifetimeMs": 13000, "baseTarget": 60 },
-    { "id": 3, "categoryIds": ["plastic", "food", "metal", "clear_glass"], "durationSeconds": 40, "itemsPerPlayer": 2, "itemLifetimeMs": 10500, "baseTarget": 90 },
-    { "id": 4, "categoryIds": ["plastic", "food", "metal", "clear_glass", "paper"], "durationSeconds": 40, "itemsPerPlayer": 3, "itemLifetimeMs": 8500, "baseTarget": 120 },
-    { "id": 5, "categoryIds": ["plastic", "food", "metal", "clear_glass", "paper", "coloured_glass"], "durationSeconds": 45, "itemsPerPlayer": 3, "itemLifetimeMs": 7500, "baseTarget": 160 },
-    { "id": 6, "categoryIds": ["plastic", "food", "metal", "clear_glass", "paper", "coloured_glass", "battery"], "durationSeconds": 50, "itemsPerPlayer": 4, "itemLifetimeMs": 6500, "baseTarget": 210 },
-    { "id": 7, "categoryIds": ["plastic", "food", "metal", "clear_glass", "paper", "coloured_glass", "battery", "residual"], "durationSeconds": 55, "itemsPerPlayer": 4, "itemLifetimeMs": 5500, "baseTarget": 270 }
+    { "id": 1, "backgroundAsset": "Resources/scene_school.png", "categoryIds": ["plastic", "food"], "durationSeconds": 35, "itemsPerPlayer": 1, "itemLifetimeMs": 16000, "baseTarget": 30 },
+    { "id": 2, "backgroundAsset": "Resources/scene_park.png", "categoryIds": ["plastic", "food", "metal"], "durationSeconds": 35, "itemsPerPlayer": 2, "itemLifetimeMs": 13000, "baseTarget": 60 },
+    { "id": 3, "backgroundAsset": "Resources/scene_beach.png", "categoryIds": ["plastic", "food", "metal", "clear_glass"], "durationSeconds": 40, "itemsPerPlayer": 2, "itemLifetimeMs": 10500, "baseTarget": 90 },
+    { "id": 4, "backgroundAsset": "Resources/scene_football_field.png", "categoryIds": ["plastic", "food", "metal", "clear_glass", "paper"], "durationSeconds": 40, "itemsPerPlayer": 3, "itemLifetimeMs": 8500, "baseTarget": 120 },
+    { "id": 5, "backgroundAsset": "Resources/scene_school.png", "categoryIds": ["plastic", "food", "metal", "clear_glass", "paper", "coloured_glass"], "durationSeconds": 45, "itemsPerPlayer": 3, "itemLifetimeMs": 7500, "baseTarget": 160 },
+    { "id": 6, "backgroundAsset": "Resources/scene_park.png", "categoryIds": ["plastic", "food", "metal", "clear_glass", "paper", "coloured_glass", "battery"], "durationSeconds": 50, "itemsPerPlayer": 4, "itemLifetimeMs": 6500, "baseTarget": 210 },
+    { "id": 7, "backgroundAsset": "Resources/scene_beach.png", "categoryIds": ["plastic", "food", "metal", "clear_glass", "paper", "coloured_glass", "battery", "residual"], "durationSeconds": 55, "itemsPerPlayer": 4, "itemLifetimeMs": 5500, "baseTarget": 270 }
   ]
 }

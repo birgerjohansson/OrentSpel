@@ -47,9 +47,9 @@ export class Renderer {
     modal.addEventListener('click', event => { if (event.target === modal) modal.remove(); });
   }
 
-  showCountdown(onFinished) {
+  showCountdown(onFinished, backgroundAsset = 'Resources/scene_school.png') {
     this.root.innerHTML = `
-      <section class="countdown-screen" aria-live="assertive" aria-label="Spelet börjar snart">
+      <section class="countdown-screen" aria-live="assertive" aria-label="Spelet börjar snart" style="--scene-background:url('${encodeURI(backgroundAsset)}')">
         <span class="countdown-label">GÖR ER REDO</span>
         <strong class="countdown-number">3</strong>
       </section>`;
@@ -70,7 +70,7 @@ export class Renderer {
   }
 
   showLevelIntro(level, players, onFinished) {
-    this.root.innerHTML = `<section class="level-screen"><div class="level-card"><p class="level-kicker">${escapeHTML(level.difficultyLabel)}</p><h1>Nivå ${level.id}</h1><p>Samla <strong>${level.targetScore} poäng</strong> tillsammans</p><div class="level-bins">${level.categories.map(category => `<span style="--bin-color:${category.binColor}"><img src="${encodeURI(category.binAsset)}" alt="${escapeHTML(category.label)}"></span>`).join('')}</div><div class="active-colors">${players.map(player => `<span style="--player-color:${player.color}"></span>`).join('')}</div></div></section>`;
+    this.root.innerHTML = `<section class="level-screen" style="--scene-background:url('${encodeURI(level.backgroundAsset)}')"><div class="level-card"><p class="level-kicker">${escapeHTML(level.difficultyLabel)}</p><h1>Nivå ${level.id}</h1><p>Samla <strong>${level.targetScore} poäng</strong> tillsammans</p><div class="level-bins">${level.categories.map(category => `<span style="--bin-color:${category.binColor}"><img src="${encodeURI(category.binAsset)}" alt="${escapeHTML(category.label)}"></span>`).join('')}</div><div class="active-colors">${players.map(player => `<span style="--player-color:${player.color}"></span>`).join('')}</div></div></section>`;
     window.setTimeout(onFinished, 2200);
   }
 
@@ -82,7 +82,7 @@ export class Renderer {
     const availableBinWidth = window.innerWidth * .94 / level.categories.length;
     const binWidth = Math.max(64, Math.min(preferredBinWidth, availableBinWidth));
     this.root.innerHTML = `
-      <section class="game" aria-label="Sopsorteringsspel" style="--trash-size:${trashSize}px;--bin-width:${binWidth}px;--bin-count:${level.categories.length}">
+      <section class="game" aria-label="Sopsorteringsspel" style="--scene-background:url('${encodeURI(level.backgroundAsset)}');--trash-size:${trashSize}px;--bin-width:${binWidth}px;--bin-count:${level.categories.length}">
         <div class="hud">
           <div class="level-indicator">NIVÅ ${level.id}</div>
           <div class="team-progress" aria-label="Framsteg mot nivåmålet">

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'orent-spel-levels-v4';
+const CACHE_NAME = 'orent-spel-levels-v5';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -18,6 +18,9 @@ const APP_SHELL = [
   '/js/logic/StatisticsStore.js',
   '/js/ui/Renderer.js',
   '/Resources/scene_school.png',
+  '/Resources/scene_park.png',
+  '/Resources/scene_beach.png',
+  '/Resources/scene_football_field.png',
   '/Resources/cup.png',
   '/Resources/chips.png',
   '/Resources/can.png',
