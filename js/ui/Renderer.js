@@ -8,11 +8,12 @@ export class Renderer {
       <section class="start-screen">
         <div class="start-content">
           <h1 class="game-title">ORENT SPEL</h1>
-          <p class="start-instructions">Välj antal spelare och klara alla fyra nivåer tillsammans.</p>
+          <p class="start-instructions">Välj antal spelare och klara alla sju nivåer tillsammans.</p>
           <div class="player-count" role="group" aria-label="Antal spelare">${[1, 2, 3, 4].map(count => `<button type="button" data-player-count="${count}" class="${count === 1 ? 'is-selected' : ''}">${count}</button>`).join('')}</div>
           <div class="color-choices" aria-label="Aktiva spelarfärger">${this.config.players.map((player, index) => `<span class="color-choice ${index ? 'is-inactive' : ''}" data-player-color="${index + 1}" style="--player-color:${player.color}" aria-label="Spelarfärg"></span>`).join('')}</div>
           <button class="start-button" type="button">STARTA</button>
         </div>
+        <button class="credits-button" type="button" aria-label="Visa information och tack">i</button>
       </section>`;
     let playerCount = 1;
     this.root.querySelectorAll('[data-player-count]').forEach(button => button.addEventListener('click', () => {
@@ -21,7 +22,29 @@ export class Renderer {
       this.root.querySelectorAll('[data-player-color]').forEach(color => color.classList.toggle('is-inactive', Number(color.dataset.playerColor) > playerCount));
     }));
     this.root.querySelector('.start-button').addEventListener('click', () => onStart(playerCount), { once: true });
+    this.root.querySelector('.credits-button').addEventListener('click', () => this.showCredits());
     this.addLongPress(this.root.querySelector('.game-title'), onSettings);
+  }
+
+  showCredits() {
+    const modal = document.createElement('section');
+    modal.className = 'credits-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Information och tack');
+    modal.innerHTML = `
+      <div class="credits-card">
+        <button class="credits-close" type="button" aria-label="Stäng information">×</button>
+        <h2>Tack till</h2>
+        <ul>
+          <li>Codex</li>
+          <li><a href="https://www.sverigesorterar.se" target="_blank" rel="noopener noreferrer">www.sverigesorterar.se</a></li>
+          <li>Helsingborg Science Center</li>
+        </ul>
+      </div>`;
+    this.root.append(modal);
+    modal.querySelector('.credits-close').addEventListener('click', () => modal.remove());
+    modal.addEventListener('click', event => { if (event.target === modal) modal.remove(); });
   }
 
   showCountdown(onFinished) {
@@ -55,7 +78,9 @@ export class Renderer {
     const trashScale = this.config.settings.trashScale / 100;
     const binScale = this.config.settings.binScale / 100;
     const trashSize = Math.min(Math.max(68, window.innerWidth * .042), 116) * trashScale;
-    const binWidth = Math.max(64, window.innerWidth * .14) * binScale;
+    const preferredBinWidth = window.innerWidth * .14 * binScale;
+    const availableBinWidth = window.innerWidth * .94 / level.categories.length;
+    const binWidth = Math.max(64, Math.min(preferredBinWidth, availableBinWidth));
     this.root.innerHTML = `
       <section class="game" aria-label="Sopsorteringsspel" style="--trash-size:${trashSize}px;--bin-width:${binWidth}px;--bin-count:${level.categories.length}">
         <div class="hud">

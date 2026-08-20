@@ -13,9 +13,12 @@
   ],
   "categories": [
     { "id": "plastic", "label": "Plast", "binColor": "#961e82", "binText": "#fff", "binAsset": "Resources/plastforpackningar_rgb.png", "assets": ["Resources/cup.png", "Resources/chips.png"] },
-    { "id": "metal", "label": "Metall", "binColor": "#5a6e78", "binAsset": "Resources/metallforpackningar_rgb.png", "assets": ["Resources/can.png"] },
-    { "id": "paper", "label": "Tidningar", "binColor": "#0082be", "binAsset": "Resources/tidningar_rgb.png", "assets": ["Resources/candy.png", "Resources/Chocolate.png"] },
-    { "id": "glass", "label": "Glas", "binColor": "#1daf8e", "binAsset": "Resources/ofargade_glasforpackningar_rgb.png", "assets": ["Resources/glass_bottle.png"] },
-    { "id": "food", "label": "Matavfall", "binColor": "#00a04b", "binAsset": "Resources/matavfall_rgb.png", "assets": ["Resources/banana_peel_2.png"] }
+    { "id": "metal", "label": "Metall", "binColor": "#5a6e78", "binAsset": "Resources/metallforpackningar_rgb.png", "assets": ["Resources/can.png", "Resources/alu_food_container.png"] },
+    { "id": "paper", "label": "Tidningar", "binColor": "#0082be", "binAsset": "Resources/tidningar_rgb.png", "assets": ["Resources/candy.png", "Resources/Chocolate.png", "Resources/news_paper.png"] },
+    { "id": "clear_glass", "label": "Ofärgat glas", "binColor": "#1daf8e", "binAsset": "Resources/ofargade_glasforpackningar_rgb.png", "assets": ["Resources/glass_bottle.png"] },
+    { "id": "coloured_glass", "label": "Färgat glas", "binColor": "#1daf8e", "binAsset": "Resources/fargade_glasforpackningar_rgb.png", "assets": ["Resources/coloured_glass_bottle.png"] },
+    { "id": "food", "label": "Matavfall", "binColor": "#00a04b", "binAsset": "Resources/matavfall_rgb.png", "assets": ["Resources/banana_peel_2.png", "Resources/eaten_apple.png"] },
+    { "id": "battery", "label": "Batterier", "binColor": "#f0910a", "binAsset": "Resources/batterier_rgb.png", "assets": ["Resources/battery.png", "Resources/vape.png"] },
+    { "id": "residual", "label": "Restavfall", "binColor": "#141414", "binAsset": "Resources/restavfall_rgb.png", "assets": ["Resources/burger_wrapper.png", "Resources/diaper.png"] }
   ]
 }

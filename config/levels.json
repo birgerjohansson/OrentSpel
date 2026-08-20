@@ -7,7 +7,10 @@
   "levels": [
     { "id": 1, "categoryIds": ["plastic", "food"], "durationSeconds": 60, "itemsPerPlayer": 1, "itemLifetimeMs": 18000, "baseTarget": 40 },
     { "id": 2, "categoryIds": ["plastic", "food", "metal"], "durationSeconds": 60, "itemsPerPlayer": 2, "itemLifetimeMs": 14000, "baseTarget": 80 },
-    { "id": 3, "categoryIds": ["plastic", "food", "metal", "glass"], "durationSeconds": 60, "itemsPerPlayer": 2, "itemLifetimeMs": 11000, "baseTarget": 120 },
-    { "id": 4, "categoryIds": ["plastic", "food", "metal", "glass", "paper"], "durationSeconds": 60, "itemsPerPlayer": 3, "itemLifetimeMs": 8000, "baseTarget": 170 }
+    { "id": 3, "categoryIds": ["plastic", "food", "metal", "clear_glass"], "durationSeconds": 60, "itemsPerPlayer": 2, "itemLifetimeMs": 11000, "baseTarget": 120 },
+    { "id": 4, "categoryIds": ["plastic", "food", "metal", "clear_glass", "paper"], "durationSeconds": 60, "itemsPerPlayer": 3, "itemLifetimeMs": 8000, "baseTarget": 170 },
+    { "id": 5, "categoryIds": ["plastic", "food", "metal", "clear_glass", "paper", "coloured_glass"], "durationSeconds": 60, "itemsPerPlayer": 3, "itemLifetimeMs": 7000, "baseTarget": 220 },
+    { "id": 6, "categoryIds": ["plastic", "food", "metal", "clear_glass", "paper", "coloured_glass", "battery"], "durationSeconds": 60, "itemsPerPlayer": 4, "itemLifetimeMs": 6500, "baseTarget": 280 },
+    { "id": 7, "categoryIds": ["plastic", "food", "metal", "clear_glass", "paper", "coloured_glass", "battery", "residual"], "durationSeconds": 60, "itemsPerPlayer": 4, "itemLifetimeMs": 6000, "baseTarget": 350 }
   ]
 }
