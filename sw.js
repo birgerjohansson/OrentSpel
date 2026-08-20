@@ -1,4 +1,4 @@
-const CACHE_NAME = 'orent-spel-levels-v2';
+const CACHE_NAME = 'orent-spel-levels-v3';
 const APP_SHELL = [
   '/',
   '/index.html',

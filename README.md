@@ -2,7 +2,7 @@
 
 Ett touch-fokuserat HTML5-spel för en till fyra samtidiga spelare. Spelarna väljer antal deltagare, får varsin färg och samarbetar om en gemensam poäng. Rätt sortering ger 10 poäng och fel sortering ger -4 poäng.
 
-Kampanjen består av sju nivåer. Den första har två avfallskategorier och lugnt tempo. Varje ny nivå lägger till en kategori, visar mer skräp och låter skräpet försvinna snabbare. Lagets poängmål anpassas efter antalet spelare. När målet nås går laget vidare direkt; tar tiden slut kan nivån spelas om.
+Kampanjen består av sju nivåer och har en sammanlagd maximal nivåtid på fem minuter. Den första har två avfallskategorier och lugnt tempo. Varje ny nivå lägger till en kategori, visar mer skräp och låter skräpet försvinna snabbare. Lagets poängmål anpassas efter antalet spelare. När målet nås går laget vidare direkt; tar tiden slut kan nivån spelas om.
 
 ## Starta lokalt
 
