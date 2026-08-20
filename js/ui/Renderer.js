@@ -12,9 +12,32 @@ export class Renderer {
           <div class="color-choices" aria-label="Välj en av dessa spelarfärger">${this.config.players.map(player => `<span class="color-choice" style="--player-color:${player.color}" aria-label="Spelarfärg"></span>`).join('')}</div>
           <button class="start-button" type="button">STARTA</button>
         </div>
+        <button class="credits-button" type="button" aria-label="Visa information och tack">i</button>
       </section>`;
     this.root.querySelector('.start-button').addEventListener('click', onStart, { once: true });
+    this.root.querySelector('.credits-button').addEventListener('click', () => this.showCredits());
     this.addLongPress(this.root.querySelector('.game-title'), onSettings);
+  }
+
+  showCredits() {
+    const modal = document.createElement('section');
+    modal.className = 'credits-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Information och tack');
+    modal.innerHTML = `
+      <div class="credits-card">
+        <button class="credits-close" type="button" aria-label="Stäng information">×</button>
+        <h2>Tack till</h2>
+        <ul>
+          <li>Codex</li>
+          <li><a href="https://www.sverigesorterar.se" target="_blank" rel="noopener noreferrer">www.sverigesorterar.se</a></li>
+          <li>Helsingborg Science Center</li>
+        </ul>
+      </div>`;
+    this.root.append(modal);
+    modal.querySelector('.credits-close').addEventListener('click', () => modal.remove());
+    modal.addEventListener('click', event => { if (event.target === modal) modal.remove(); });
   }
 
   showCountdown(onFinished) {
@@ -43,9 +66,11 @@ export class Renderer {
     const trashScale = this.config.settings.trashScale / 100;
     const binScale = this.config.settings.binScale / 100;
     const trashSize = Math.min(Math.max(68, window.innerWidth * .042), 116) * trashScale;
-    const binWidth = Math.max(64, window.innerWidth * .14) * binScale;
+    const preferredBinWidth = window.innerWidth * .14 * binScale;
+    const availableBinWidth = window.innerWidth * .94 / this.config.categories.length;
+    const binWidth = Math.max(64, Math.min(preferredBinWidth, availableBinWidth));
     this.root.innerHTML = `
-      <section class="game" aria-label="Sopsorteringsspel" style="--trash-size:${trashSize}px;--bin-width:${binWidth}px">
+      <section class="game" aria-label="Sopsorteringsspel" style="--trash-size:${trashSize}px;--bin-width:${binWidth}px;--bin-count:${this.config.categories.length}">
         <div class="hud">
           ${this.config.players.map(player => `<div class="player-score" data-score="${player.id}" style="--player-color:${player.color}" aria-label="Poäng"><strong>${scores.get(player.id)}</strong></div>`).join('')}
           <output class="game-timer" aria-label="Tid kvar" style="--progress: 1"><span>02:00</span></output>

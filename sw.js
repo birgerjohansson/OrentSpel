@@ -1,4 +1,4 @@
-const CACHE_NAME = 'orent-spel-v2';
+const CACHE_NAME = 'orent-spel-v5';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -19,15 +19,26 @@ const APP_SHELL = [
   '/Resources/cup.png',
   '/Resources/chips.png',
   '/Resources/can.png',
+  '/Resources/alu_food_container.png',
   '/Resources/candy.png',
   '/Resources/Chocolate.png',
+  '/Resources/news_paper.png',
   '/Resources/glass_bottle.png',
+  '/Resources/coloured_glass_bottle.png',
   '/Resources/banana_peel_2.png',
+  '/Resources/eaten_apple.png',
+  '/Resources/battery.png',
+  '/Resources/vape.png',
+  '/Resources/burger_wrapper.png',
+  '/Resources/diaper.png',
   '/Resources/plastforpackningar_rgb.png',
   '/Resources/metallforpackningar_rgb.png',
   '/Resources/tidningar_rgb.png',
   '/Resources/ofargade_glasforpackningar_rgb.png',
-  '/Resources/matavfall_rgb.png'
+  '/Resources/fargade_glasforpackningar_rgb.png',
+  '/Resources/matavfall_rgb.png',
+  '/Resources/batterier_rgb.png',
+  '/Resources/restavfall_rgb.png'
 ];
 
 self.addEventListener('install', event => {
