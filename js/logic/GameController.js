@@ -52,7 +52,8 @@ export class GameController {
     const element = this.renderer.addItem(item, player, this.findOpenPosition());
     item.element = element;
     this.state.addItem(item); this.elements.set(item.id, element);
-    item.expiry = window.setTimeout(() => this.expire(item), this.randomItemLifetime());
+    item.remainingLifetimeMs = this.randomItemLifetime();
+    this.scheduleExpiry(item);
   }
 
   findOpenPosition() {
@@ -75,9 +76,10 @@ export class GameController {
     const element = event.target.closest('.trash-object');
     if (!element || this.dragging.has(event.pointerId)) return;
     const item = this.state.activeItems.get(element.dataset.itemId);
-    if (!item) return;
+    if (!item || [...this.dragging.values()].some(drag => drag.item.id === item.id)) return;
     event.preventDefault();
     const rect = element.getBoundingClientRect();
+    this.pauseExpiry(item);
     this.dragging.set(event.pointerId, { item, element, offsetX: event.clientX - rect.left, offsetY: event.clientY - rect.top });
     element.setPointerCapture(event.pointerId); element.classList.add('dragging');
   }
@@ -105,6 +107,7 @@ export class GameController {
     const drag = this.dragging.get(pointerId); if (!drag) return;
     if (drag.element.hasPointerCapture(pointerId)) drag.element.releasePointerCapture(pointerId);
     drag.element.classList.remove('dragging'); this.dragging.delete(pointerId);
+    if (this.state.activeItems.has(drag.item.id)) this.scheduleExpiry(drag.item);
   }
 
   binAtPosition(x, y) {
@@ -144,6 +147,17 @@ export class GameController {
   }
 
   randomItemLifetime() { return Math.round(this.level.itemLifetimeMs * (.75 + Math.random() * .5)); }
+
+  scheduleExpiry(item) {
+    window.clearTimeout(item.expiry);
+    item.expiresAt = performance.now() + item.remainingLifetimeMs;
+    item.expiry = window.setTimeout(() => this.expire(item), item.remainingLifetimeMs);
+  }
+
+  pauseExpiry(item) {
+    window.clearTimeout(item.expiry);
+    item.remainingLifetimeMs = Math.max(1, item.expiresAt - performance.now());
+  }
 
   updateClock() {
     const remaining = Math.max(0, Math.ceil((this.endsAt - performance.now()) / 1000));
